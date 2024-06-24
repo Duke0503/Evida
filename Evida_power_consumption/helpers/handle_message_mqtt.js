@@ -1,3 +1,5 @@
+const { handle_status_outlet } = require('./handle_status_outlet');
+
 const handle_message_mqtt = (
   topic_mqtt,
   data_ebox,
@@ -20,6 +22,9 @@ const handle_message_mqtt = (
       const ebox_id_pme_value = data_ebox.toString().split(',');
       const ebox_id_pme_last_value = ebox_id_pme_value[ebox_id_pme_value.length - 1];
       message_buffer_consumption[ebox_id].PME_value = Number(ebox_id_pme_last_value);
+      break;
+    case 'SEbox':
+      handle_status_outlet(ebox_id, data_ebox, message_buffer_consumption);
   };
 };
 

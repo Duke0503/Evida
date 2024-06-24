@@ -10,6 +10,7 @@ const { save_data_to_mongodb } = require('./helpers/save_data_to_mongodb');
 database.connect();
 const client_connect_mqtt = mqtt_connection.connect();
 
+const SE_topic_mqtt = 'SEbox_';
 const PE_topic_mqtt = 'PEbox_';
 const PME_topic_mqtt = 'PMEbox_';
 
@@ -25,6 +26,7 @@ const subscribe_to_topic_mqtt = async() => {
       
       topics_mqtt.push(PE_topic_mqtt + ebox_id);
       topics_mqtt.push(PME_topic_mqtt + ebox_id);
+      topics_mqtt.push(SE_topic_mqtt + ebox_id);
     });
 
     topics_mqtt.forEach(topic_mqtt => {
@@ -73,6 +75,6 @@ client_connect_mqtt.on('message', (topic_mqtt, data_ebox) => {
   );
 });
 
-cron.schedule('0 * * * *', async () => {
+cron.schedule('* * * * *', async () => {
   subscribe_to_topic_mqtt();
 });
