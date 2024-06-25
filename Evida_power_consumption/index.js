@@ -1,13 +1,11 @@
 require('dotenv').config();
 
-const database = require('./config/database');
 const mqtt_connection = require('./config/mqtt');
 const cron = require('node-cron');
 const { fetch_ebox_id } = require('./helpers/fetch_ebox_id');
 const { handle_message_mqtt } = require('./helpers/handle_message_mqtt');
-const { save_data_to_mongodb } = require('./helpers/save_data_to_mongodb');
+const { insert_data } = require('./helpers/insert_data.js');
 
-database.connect();
 const client_connect_mqtt = mqtt_connection.connect();
 
 const SE_topic_mqtt = 'SEbox_';
@@ -63,7 +61,7 @@ const unsubcribe_to_topic_mqtt = () => {
  };
 
 const save_data = () => {
-  save_data_to_mongodb(message_buffer_consumption);
+  insert_data(message_buffer_consumption);
   message_buffer_consumption = [];
 }
 
