@@ -1,4 +1,5 @@
 const data = require('../models/outlet_data.model');
+const { insert_query } = require('./insert_query');
 const { format_time_to_string } = require('./format_time_to_string');
 
 const save_data_to_database = async (
@@ -11,17 +12,17 @@ const save_data_to_database = async (
 
   if (outlet.outlet_status != 2) {
 
-    await data.create({
-      ebox_id: outlet.ebox_id,
-      timestamp: format_time_to_string(new Date()),
-      outlet_id: outlet.outlet_id,
-      box_status: box_status,
-      outlet_status: outlet.outlet_status,
-      current: 0,
-      voltage: 0,
-      power_factor: 0,
-      power_consumption: 0,
-    });
+    insert_query(
+      outlet.ebox_id,
+      format_time_to_string(new Date()),
+      outlet.outlet_id,
+      box_status,
+      outlet.outlet_status,
+      0,
+      0,
+      0,
+      0,
+    )
   } else {
     if (
       outlet.current != 0 &&
@@ -30,17 +31,17 @@ const save_data_to_database = async (
       outlet.power_consumption != 0
     ) {
 
-      await data.create({
-        ebox_id: outlet.ebox_id,
-        timestamp: format_time_to_string(new Date()),
-        outlet_id: outlet.outlet_id,
-        box_status: box_status,
-        outlet_status: outlet.outlet_status,
-        current: outlet.current / 1000,
-        voltage: outlet.voltage,
-        power_factor: outlet.power_factor,
-        power_consumption: outlet.power_consumption / 1000,
-      });
+      insert_query(
+        outlet.ebox_id,
+        format_time_to_string(new Date()),
+        outlet.outlet_id,
+        box_status,
+        outlet.outlet_status,
+        outlet.current / 1000,
+        outlet.voltage,
+        outlet.power_factor,
+        outlet.power_consumption / 1000, 
+      );
     }
   }
   

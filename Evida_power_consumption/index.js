@@ -2,9 +2,18 @@ require('dotenv').config();
 
 const mqtt_connection = require('./config/mqtt');
 const cron = require('node-cron');
+const client = require('./config/database.js')
 const { fetch_ebox_id } = require('./helpers/fetch_ebox_id');
 const { handle_message_mqtt } = require('./helpers/handle_message_mqtt');
 const { insert_data } = require('./helpers/insert_data.js');
+
+client.connect(err => {
+  if (err) {
+    console.error('Error connecting to PostgreSQL', err);
+  } else {
+    console.log('Connected to PostgreSQL!');
+  }
+});
 
 const client_connect_mqtt = mqtt_connection.connect();
 
