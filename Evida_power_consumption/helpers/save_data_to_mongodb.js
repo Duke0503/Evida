@@ -10,7 +10,7 @@ const save_data_to_mongodb = (message_buffer_consumption) => {
     if (!message_consumption.PME_value) {
       message_consumption.PME_value = 0;
     }
-    console.log(message_consumption)
+
     await consumption.create({
       ebox_id: message_consumption.ebox_id,
       timestamp: format_time(new Date()),
@@ -24,7 +24,7 @@ const save_data_to_mongodb = (message_buffer_consumption) => {
       outlet_7_status: message_consumption.outlet_7_status,
       outlet_8_status: message_consumption.outlet_8_status,
       outlet_9_status: message_consumption.outlet_9_status,
-      ebox_satus: message_consumption.box_satus,
+      ebox_status: message_consumption.ebox_status,
       power_consumption: message_consumption.power_consumption,
       PME_value: message_consumption.PME_value,
     });

@@ -12,7 +12,7 @@ const handle_status_outlet = (ebox_id, data_ebox, message_buffer_consumption) =>
   message_buffer_consumption[ebox_id].outlet_8_status = Number(list_outlet[8].split('-')[1]);
   message_buffer_consumption[ebox_id].outlet_9_status = Number(list_outlet[9].split('-')[1]);
   message_buffer_consumption[ebox_id].ebox_status = Number(list_outlet[10].split('-')[1]);
-  
+  console.log(message_buffer_consumption[ebox_id].ebox_status)
 }
 
 module.exports = { handle_status_outlet };
