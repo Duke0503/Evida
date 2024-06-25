@@ -29,7 +29,7 @@ const handle_status_data_outlet = async (
           power_factor: 0,
           power_consumption: 0,
         };
-        if (outlet.length == 0) {
+        if (!outlet) {
           await outlets.create({
             name: ebox_outlet_id,
             outlet_status: Number(outlet_status),
@@ -43,6 +43,7 @@ const handle_status_data_outlet = async (
       };
 
       if (list_ebox_outlet[ebox_outlet_id].outlet_status != Number(outlet_status)) {
+
         await outlets.updateOne(
           {
             _id: outlet._id,   
@@ -56,7 +57,7 @@ const handle_status_data_outlet = async (
         );
 
         list_ebox_outlet[ebox_outlet_id].outlet_status = Number(outlet_status);
-        
+
         save_data_to_database(list_ebox_outlet[ebox_outlet_id]);
       };
     };

@@ -75,6 +75,6 @@ client_connect_mqtt.on('message', (topic_mqtt, data_ebox) => {
   );
 });
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 * * * *', async () => {
   subscribe_to_topic_mqtt();
 });

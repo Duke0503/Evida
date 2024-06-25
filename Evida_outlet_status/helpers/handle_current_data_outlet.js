@@ -18,7 +18,8 @@ const handle_current_data_outlet = async (
           list_ebox_outlet[ebox_outlet_id].current = Number(outlet_current);
         } else {
           if (Number(outlet_current) - list_ebox_outlet[ebox_outlet_id].current > 1000
-            || Number(outlet_current) - list_ebox_outlet[ebox_outlet_id].current < 1000) {
+            || Number(outlet_current) - list_ebox_outlet[ebox_outlet_id].current < -1000) {
+
             const outlet = await outlets.find({
               name: ebox_outlet_id, 
             });

@@ -18,7 +18,8 @@ const handle_power_factor_data_outlet = async (
           list_ebox_outlet[ebox_outlet_id].power_factor = Number(outlet_power_factor);
         } else {
           if (Number(outlet_power_factor) - list_ebox_outlet[ebox_outlet_id].power_factor > 10
-            || Number(outlet_power_factor) - list_ebox_outlet[ebox_outlet_id].power_factor < 10) {
+            || Number(outlet_power_factor) - list_ebox_outlet[ebox_outlet_id].power_factor < -10) {
+
             const outlet = await outlets.find({
               name: ebox_outlet_id, 
             });
