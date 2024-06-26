@@ -1,11 +1,12 @@
 const client_outlet = require('../config/database');
 
 const find_outlet_by_name = async (name) => {
-  const query = 'SELECT * FROM outlets WHERE name = $1';
+  const query = 'SELECT name FROM outlets WHERE name = $1';
   const values = [name];
-
+  
   try {
     const outlet = await client_outlet.query(query, values);
+    console.log(outlet);
     return outlet;
   } catch (err) {
     console.log('Error querying outlets', err);

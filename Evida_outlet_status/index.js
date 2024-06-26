@@ -67,5 +67,5 @@ client_connect_mqtt.on('message', (topic_mqtt, data_ebox) => {
 });
 
 cron.schedule('* * * * *', async () => {
-  check_time_outlet(ebox_outlet, message_buffer_outlet);
+  check_time_outlet(list_ebox_outlet);
 });

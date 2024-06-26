@@ -8,12 +8,12 @@ const check_time_outlet = async (list_ebox_outlet) => {
 
   try {
     const outlet_with_status_2 = await client.query(
-      'SELECT * FROM outlets WHERE status = $1 AND update_time <= $2',
+      'SELECT name FROM outlets WHERE outlet_status = $1 AND update_time <= $2',
       [2, more_than_30_min]
     );
 
     const outlet_with_status_differ_2 = await client.query(
-      'SELECT * FROM outlets WHERE status <> $1 AND update_time <= $2',
+      'SELECT name FROM outlets WHERE outlet_status <> $1 AND update_time <= $2',
       [2, more_than_60_min]
     );
 
@@ -25,8 +25,8 @@ const check_time_outlet = async (list_ebox_outlet) => {
       }
 
       await client.query(
-        'UPDATE outlets SET update_time = $1 WHERE id = $2',
-        [new Date(), outlet_.id]
+        'UPDATE outlets SET update_time = $1 WHERE name = $2',
+        [new Date(), outlet_.name]
       );
     }
   } catch (err) {
