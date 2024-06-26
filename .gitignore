@@ -2,3 +2,5 @@ Evida_power_consumption/node_modules
 Evida_power_consumption/.env
 Evida_outlet_status/node_modules
 Evida_outlet_status/.env 
+back_up_data/.env 
+back_up_data/node_modules
