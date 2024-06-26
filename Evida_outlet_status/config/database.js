@@ -1,14 +1,11 @@
-const mongoose = require("mongoose");
+const { Client } = require('pg');
 
-module.exports.connect = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URL, {
-      serverSelectionTimeoutMS: 30000,
-      socketTimeoutMS: 45000,
-    }
-    );
-    console.log("Connect Database Success!");
-  } catch (error) {
-    console.log("Connect Database Error!");
-  }
-}
+const client = new Client({
+  user: process.env.DB_USERNAME,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT
+});
+
+module.exports = client;

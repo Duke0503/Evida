@@ -1,4 +1,4 @@
-const client = require('../config/sql_server');
+const client = require('../config/database');
 
 const insert_query = async (
   ebox_id,

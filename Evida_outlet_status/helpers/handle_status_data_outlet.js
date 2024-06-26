@@ -1,5 +1,5 @@
-const outlets = require('../models/outlet.model');
 const { save_data_to_database } = require('./save_data_to_database');
+const { find_outlet_by_name, insert_outlet, update_status_outlet } = require('./outlets_sql');
 
 const handle_status_data_outlet = async (
   ebox_id,
@@ -14,10 +14,7 @@ const handle_status_data_outlet = async (
 
     if (Number(outlet_status) != 6) {
       const ebox_outlet_id = 'Ebox_' + ebox_id + '_' + outlet_id;
-      const outlet = await outlets.findOne({
-        name: ebox_outlet_id,
-      });
-
+      
       if (!list_ebox_outlet[ebox_outlet_id]) {
         list_ebox_outlet[ebox_outlet_id] = {
           outlet_id : Number(outlet_id),
@@ -29,32 +26,20 @@ const handle_status_data_outlet = async (
           power_factor: 0,
           power_consumption: 0,
         };
-        if (!outlet) {
-          await outlets.create({
-            name: ebox_outlet_id,
-            outlet_status: Number(outlet_status),
-            update_time: new Date(),
-          });
+        
+        const outlet = await find_outlet_by_name(ebox_outlet_id);
+        if (outlet.rowCount == 0) {
 
-          list_ebox_outlet[ebox_outlet_id].outlet_status = Number(outlet_status);  
+          await insert_outlet(ebox_outlet_id, outlet_status);
+
         } else {
-          list_ebox_outlet[ebox_outlet_id].outlet_status = outlet.outlet_status;
+          list_ebox_outlet[ebox_outlet_id].outlet_status = outlet.rows[0].outlet_status;
         };
       };
 
       if (list_ebox_outlet[ebox_outlet_id].outlet_status != Number(outlet_status)) {
-
-        await outlets.updateOne(
-          {
-            _id: outlet._id,   
-          }, 
-          { $set:  
-            { 
-              status: Number(outlet_status),
-              update_time: new Date(),
-            } 
-          }
-        );
+        
+        await update_status_outlet(ebox_outlet_id, outlet_status);
 
         list_ebox_outlet[ebox_outlet_id].outlet_status = Number(outlet_status);
 

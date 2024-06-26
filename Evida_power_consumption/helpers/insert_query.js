@@ -20,7 +20,7 @@ const insert_query = async (
   const insertQuery = `
     INSERT INTO power_consumption (
       ebox_id, 
-      "timestamp",
+      timestamp,
       outlet_0_status,
       outlet_1_status,
       outlet_2_status,

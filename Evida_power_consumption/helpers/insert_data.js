@@ -1,4 +1,3 @@
-const { format_time } = require('./format_time');
 const { insert_query } = require('./insert_query');
 
 const insert_data = (message_buffer_consumption) => {
@@ -13,7 +12,7 @@ const insert_data = (message_buffer_consumption) => {
 
     insert_query(
       message_consumption.ebox_id,
-      format_time(new Date()),
+      new Date(),
       message_consumption.outlet_0_status,
       message_consumption.outlet_1_status,
       message_consumption.outlet_2_status,

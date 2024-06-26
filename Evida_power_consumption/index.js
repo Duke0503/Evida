@@ -15,6 +15,10 @@ client.connect(err => {
   }
 });
 
+process.on('exit', () => {
+  client.end();
+});
+
 const client_connect_mqtt = mqtt_connection.connect();
 
 const SE_topic_mqtt = 'SEbox_';

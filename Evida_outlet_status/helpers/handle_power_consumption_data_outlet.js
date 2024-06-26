@@ -1,5 +1,5 @@
-const outlets = require('../models/outlet.model');
 const { save_data_to_database } = require('./save_data_to_database');
+const { update_outlet } = require('./outlets_sql');
 
 const handle_power_consumption_data_outlet = async (
   ebox_id,
@@ -20,20 +20,7 @@ const handle_power_consumption_data_outlet = async (
           if (Number(outlet_power_consumption) - list_ebox_outlet[ebox_outlet_id].power_consumption > 1000
             || Number(outlet_power_consumption) - list_ebox_outlet[ebox_outlet_id].power_consumption < -1000) {
 
-            const outlet = await outlets.find({
-              name: ebox_outlet_id, 
-            });
-
-            await outlets.updateOne(
-              {
-              _id: outlet._id,
-              },
-              { 
-                $set: {
-                update_time: new Date(),
-                } 
-              }
-            );
+            await update_outlet(ebox_outlet_id);
 
             list_ebox_outlet[ebox_outlet_id].power_consumption = Number(outlet_power_consumption);
 

@@ -1,6 +1,4 @@
-const data = require('../models/outlet_data.model');
 const { insert_query } = require('./insert_query');
-const { format_time_to_string } = require('./format_time_to_string');
 
 const save_data_to_database = async (
   outlet,
@@ -12,9 +10,9 @@ const save_data_to_database = async (
 
   if (outlet.outlet_status != 2) {
 
-    insert_query(
+    await insert_query(
       outlet.ebox_id,
-      format_time_to_string(new Date()),
+      new Date(),
       outlet.outlet_id,
       box_status,
       outlet.outlet_status,
@@ -31,9 +29,9 @@ const save_data_to_database = async (
       outlet.power_consumption != 0
     ) {
 
-      insert_query(
+      await insert_query(
         outlet.ebox_id,
-        format_time_to_string(new Date()),
+        new Date(),
         outlet.outlet_id,
         box_status,
         outlet.outlet_status,
