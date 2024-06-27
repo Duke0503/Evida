@@ -60,6 +60,6 @@ $ npm start
 9. **power_factor**
    - **Description**: Electrical power is being converted and utilized by the electronic outlet when the status is 2 (%).
 
-10. **power_consumption**
+9. **power_consumption**
    - **Description**: The power consumption measurement of the electrical outlet when the status is 2, in kilowatts (kW).
 
