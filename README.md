@@ -1,7 +1,7 @@
 # System Overview Documentation
-![Overview](https://github.com/Duke0503/Evida/blob/main/Images/system_overview.png?raw=true)
+![Overview](https://github.com/Duke0503/Evida/blob/main/Images/overview.png?raw=true)
 ## Introduction
-This document provides a detailed description of the system architecture illustrated in the overview diagram. The system is designed to handle and analyze messages from multiple EBoxes, process them through various backend services, store data in local and cloud databases, and visualize the results using Grafana dashboards.
+This document provides a detailed description of the system architecture illustrated in the overview diagram. The system is designed to handle and analyze messages from multiple EBoxes and other databases, process them through various backend services, store data in local and cloud databases, and visualize the results using Grafana dashboards.
 
 ## Components
 
@@ -15,35 +15,42 @@ This document provides a detailed description of the system architecture illustr
   - Receives messages from multiple EBox devices.
   - Forwards messages to the subscribers (Service 1 and Service 2).
 
-### 3. Service 1: Cron and Analyze Data
+### 3. Database Eboost
+- **Description**: Database Eboost is an external database from which Service 1 fetches data at specified intervals for further processing.
+- **Function**:
+  - Stores raw data from EBoxes and other sources.
+  - Acts as a source for data that needs to be processed and analyzed by Service 1.
+  - Provides historical data for detailed analysis and reporting.
+
+### 4. Service 1: Cron and Analyze Data
 - **Description**: This service runs at specified intervals (e.g., every hour) to fetch data from the Eboost database and the local database.
 - **Function**: 
   - Fetches data from Eboost database and local database.
   - Processes the data to answer specific queries using SQL statements.
   - Pushes processed data to the local database for further analysis and visualization.
 
-### 4. Service 2: Box Utilization Collection
-- **Description**: This service is responsible for collecting utilization data from the MQTT Broker.
+### 5. Service 2: Box Utilization Collection
+- **Description**: This service is responsible for collecting utilization data from the EBoxes.
 - **Function**:
   - Fetches an API to get all boxes and subscribes to all topics to receive messages.
   - Handles incoming messages and pushes consumption and PME data to the local database.
   - Schedules tasks to run every hour to ensure up-to-date data collection.
 
-### 5. Service 3: Box Photograph
-- **Description**: This service tracks the status of each outlet in the EBoxes and records relevant electrical parameters from MQTT Broker.
+### 6. Service 3: Box Photograph
+- **Description**: This service tracks the status of each outlet in the EBoxes and records relevant electrical parameters.
 - **Function**:
   - Fetches an API to get all boxes and subscribes to all topics to receive messages.
   - Tracks the statuses for each outlet of each box and records changes.
   - When the status of an outlet is 2 (charging), records current, voltage, power factor, and power consumption every 30 minutes, or when significant changes are detected.
   - Stores recorded data in the local database.
 
-### 6. Service 4: Backup Data
+### 7. Service 4: Backup Data
 - **Description**: This service ensures data is backed up to the cloud at specified intervals (e.g., midnight every day).
 - **Function**:
   - Ensures data is not duplicated or lost during the backup process.
   - Sends data from the local database to the cloud for secure storage.
 
-### 7. Local Database
+### 8. Local Database
 - **Description**: The local database stores all processed and collected data from various services.
 - **Tables**:
   - **CHARGING_BOX_ANALYSIS**
@@ -54,7 +61,14 @@ This document provides a detailed description of the system architecture illustr
   - Organizes data into structured tables for analysis and visualization.
   - Stores processed data for use by Grafana and other reporting tools.
 
-### 8. Grafana Dashboard
+### 9. Cloud
+- **Description**: The cloud storage component ensures secure, off-site backup of data.
+- **Function**:
+  - Receives data backups from the local database at specified intervals.
+  - Ensures data is securely stored and can be retrieved in case of local data loss.
+  - Provides redundancy and disaster recovery capabilities.
+
+### 10. Grafana Dashboard
 - **Description**: Grafana is a visualization tool used to create interactive and informative dashboards based on the data stored in the local database.
 - **Function**:
   - Connects to the local database to retrieve data.
@@ -94,13 +108,18 @@ This document provides a detailed description of the system architecture illustr
    - This service ensures data is backed up to the cloud at specified intervals (e.g., midnight every day).
    - It ensures that data is not duplicated or lost during the backup process.
 
-8. **Data Visualization (Grafana)**:
+8. **Data Storage in Cloud**:
+   - Data backed up from the local database is securely stored in the cloud.
+   - Provides redundancy and disaster recovery capabilities.
+
+9. **Data Visualization (Grafana)**:
    - Grafana connects to the local database to retrieve data.
    - It displays data in various visual formats for easy analysis and monitoring.
    - Users can create interactive dashboards using data from the local database tables.
 
 9. **Reporting and Analysis**:
-   - Data stored in the local database is used to generate reports and perform detailed analysis.
+   - Data stored in the local database and cloud is used to generate reports and perform detailed analysis.
    - This data helps in understanding box utilization, charging patterns, and customer behavior.
+
 ## Conclusion
-This document provides an overview of the system architecture, detailing each component's role and the data flow within the system. By following this structure, users can understand how data is collected, processed, stored, and visualized, enabling effective monitoring and analysis of the EBox-generated data and other related data.
+This document provides an overview of the system architecture, detailing each component's role and the data flow within the system. By following this structure, users can understand how data is collected, processed, stored, and visualized, enabling effective monitoring and analysis of the EBox-generated data and other relevant data.
