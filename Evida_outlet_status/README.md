@@ -1,5 +1,5 @@
 ## Introduction
-A backend program:
+A backend service:
   - Get statuses for each outlets of each boxes
   - Get a status when it changes. If not change, get status in every 1 hour.
   - When status of each outlet is 2, please record currents, voltage, power factor, power consumption

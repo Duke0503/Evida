@@ -1,5 +1,5 @@
 ## Introduction
-A backend program that fetches data from an MQTT server and pushes to MongoDB every hour.
+A backend service that receives message from an MQTT Broker and save data to PostgreSQL every hour.
 
 ## Install packages: 
 
