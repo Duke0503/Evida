@@ -12,7 +12,6 @@
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
     "moment-timezone": "^0.5.45",
-    "mongoose": "^8.4.1",
     "mqtt": "^5.7.0",
     "node-cron": "^3.0.3",
     "pg": "^8.12.0"

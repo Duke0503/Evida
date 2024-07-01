@@ -4,3 +4,5 @@ Evida_outlet_status/node_modules
 Evida_outlet_status/.env 
 back_up_data/.env 
 back_up_data/node_modules
+service1/.env
+service1/node_modules
