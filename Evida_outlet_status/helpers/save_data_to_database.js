@@ -38,7 +38,7 @@ const save_data_to_database = async (
         outlet.current / 1000,
         outlet.voltage,
         outlet.power_factor,
-        outlet.power_consumption / 1000, 
+        outlet.power_consumption / 1000,
       );
     }
   }

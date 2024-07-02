@@ -6,7 +6,6 @@ const find_outlet_by_name = async (name) => {
   
   try {
     const outlet = await client_outlet.query(query, values);
-    console.log(outlet);
     return outlet;
   } catch (err) {
     console.log('Error querying outlets', err);

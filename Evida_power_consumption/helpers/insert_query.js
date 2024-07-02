@@ -33,9 +33,11 @@ const insert_query = async (
       outlet_9_status,
       ebox_status,
       power_consumption,
-      pme_value
+      pme_value,
+      created_at,
+      updated_at
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW(), NOW())
   `;
   if (ebox_status == 0) {
     ebox_status = 'online';

@@ -21,9 +21,11 @@ const insert_query = async (
       current,
       voltage,
       power_factor,
-      power_consumption
+      power_consumption,
+      created_at,
+      updated_at
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
   `;
   values = [
     ebox_id,
