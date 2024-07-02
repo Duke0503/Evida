@@ -24,7 +24,11 @@ const fetch_ebox_data = async () => {
           district_box,
           ebox.address,
           `${ebox.latitude},${ebox.longitude}`,
-          ebox.consumedFee
+          ebox.consumedFee,
+          ebox.available,
+          ebox.status,
+          ebox.createdAt,
+          ebox.updatedAt,
         );
       });
     }) 
@@ -68,6 +72,16 @@ const fetch_user_data = async () => {
           bike_model,
           user.createdAt,
           user.balance,
+          user.activated,
+          user.enabled,
+          user.isReadTerm,
+          user.street,
+          user.city,
+          user.country,
+          user.state,
+          user.postalCode,
+          user.createdAt,
+          user.updatedAt,
         )
       });
     }) 
@@ -102,8 +116,17 @@ const fetch_transaction_data = async () => {
             transaction.box.uniqueId,
             transaction.outlet.uniqueId,
             transaction.wattageConsumed,
-            transaction.activationFee,
-            transaction.reasonClosed
+            transaction.totalFee,
+            transaction.status,
+            transaction.discountAmount,
+            transaction.promotionCode,
+            transaction.promotionDiscount,
+            transaction.activationFeeDiscount,
+            transaction.paid,
+            transaction.totalConsumedFee,
+            transaction.reasonClosed,
+            transaction.createdAt,
+            transaction.updatedAt
           );
         });
     }) 
