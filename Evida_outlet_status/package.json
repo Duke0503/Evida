@@ -15,7 +15,8 @@
     "moment-timezone": "^0.5.45",
     "mqtt": "^5.7.0",
     "node-cron": "^3.0.3",
-    "pg": "^8.12.0"
+    "pg": "^8.12.0",
+    "ping": "^0.4.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.3"

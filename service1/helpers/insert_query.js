@@ -151,7 +151,6 @@ const insert_user_query = async(
 
   try {
     await client.query(insert_query, values);
-    console.log("Finish query")
   } catch (err) {
     console.error('Error inserting row', err);
   };

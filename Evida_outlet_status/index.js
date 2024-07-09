@@ -7,65 +7,72 @@ const client = require('./config/database');
 const { fetch_ebox_id } = require('./helpers/fetch_ebox_id');
 const { handle_message_mqtt } = require('./helpers/handle_message_mqtt');
 const { check_time_outlet } = require('./helpers/check_time_outlet');
+const { check_network_connection } = require('./helpers/check_network_connection');
 
-const client_connect_mqtt = mqtt_connection.connect();
-client.connect(err => {
-  if (err) {
-    console.error('Error connecting to PostgreSQL', err);
-  } else {
-    console.log('Connected to PostgreSQL');
-  }
-});
+const initialize = async () => {
+  await check_network_connection();
 
-process.on('exit', () => {
-  client.end();
-});
+  const client_connect_mqtt = mqtt_connection.connect();
+  client.connect(err => {
+    if (err) {
+      console.error('Error connecting to PostgreSQL', err);
+    } else {
+      console.log('Connected to PostgreSQL');
+    }
+  });
 
-const SE_topic_mqtt = 'SEbox_';
-const AE_topic_mqtt = 'AEbox_';
-const PE_topic_mqtt = 'PEbox_';
-const PFE_topic_mqtt = 'PFEbox_';
-const VE_topic_mqtt = 'VEbox_';
+  process.on('exit', () => {
+    client.end();
+  });
 
-let topics_mqtt = [];
-let list_ebox_outlet = [];
+  const SE_topic_mqtt = 'SEbox_';
+  const AE_topic_mqtt = 'AEbox_';
+  const PE_topic_mqtt = 'PEbox_';
+  const PFE_topic_mqtt = 'PFEbox_';
+  const VE_topic_mqtt = 'VEbox_';
 
-client_connect_mqtt.on('connect', async() => {
-  try {
-    const list_ebox_id = await fetch_ebox_id();
+  let topics_mqtt = [];
+  let list_ebox_outlet = [];
 
-    list_ebox_id.forEach(ebox => {
-      const ebox_id = ebox.split('_')[1];
-      topics_mqtt.push(SE_topic_mqtt + ebox_id); 
-      topics_mqtt.push(AE_topic_mqtt + ebox_id); 
-      topics_mqtt.push(PE_topic_mqtt + ebox_id);
-      topics_mqtt.push(PFE_topic_mqtt + ebox_id); 
-      topics_mqtt.push(VE_topic_mqtt + ebox_id); 
-    });
+  client_connect_mqtt.on('connect', async() => {
+    try {
+      const list_ebox_id = await fetch_ebox_id();
 
-    topics_mqtt.forEach(topic_mqtt => {
-      client_connect_mqtt.subscribe(topic_mqtt, err => {
-        if (err) {
-          console.error(`Failed to subscribe to topic ${topic_mqtt}:`, err);
-        } 
-        else {
-          console.log(`Subscribed to topic ${topic_mqtt}`);
-        };
+      list_ebox_id.forEach(ebox => {
+        const ebox_id = ebox.split('_')[1];
+        topics_mqtt.push(SE_topic_mqtt + ebox_id); 
+        topics_mqtt.push(AE_topic_mqtt + ebox_id); 
+        topics_mqtt.push(PE_topic_mqtt + ebox_id);
+        topics_mqtt.push(PFE_topic_mqtt + ebox_id); 
+        topics_mqtt.push(VE_topic_mqtt + ebox_id); 
       });
-    });
-  } catch (error) {
-    console.error("Failed to fetch Ebox IDs:", error);
-  };
-});
 
-client_connect_mqtt.on('message', (topic_mqtt, data_ebox) => {
-  handle_message_mqtt(
-    topic_mqtt,
-    data_ebox,
-    list_ebox_outlet,
-  );
-});
+      topics_mqtt.forEach(topic_mqtt => {
+        client_connect_mqtt.subscribe(topic_mqtt, err => {
+          if (err) {
+            console.error(`Failed to subscribe to topic ${topic_mqtt}:`, err);
+          } 
+          else {
+            console.log(`Subscribed to topic ${topic_mqtt}`);
+          };
+        });
+      });
+    } catch (error) {
+      console.error("Failed to fetch Ebox IDs:", error);
+    };
+  });
 
-cron.schedule('* * * * *', async () => {
-  check_time_outlet(list_ebox_outlet);
-});
+  client_connect_mqtt.on('message', (topic_mqtt, data_ebox) => {
+    handle_message_mqtt(
+      topic_mqtt,
+      data_ebox,
+      list_ebox_outlet,
+    );
+  });
+
+  cron.schedule('* * * * *', async () => {
+    check_time_outlet(list_ebox_outlet);
+  });
+};
+
+initialize();

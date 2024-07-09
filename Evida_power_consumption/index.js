@@ -6,6 +6,7 @@ const client = require('./config/database.js')
 const { fetch_ebox_id } = require('./helpers/fetch_ebox_id');
 const { handle_message_mqtt } = require('./helpers/handle_message_mqtt');
 const { insert_data } = require('./helpers/insert_data.js');
+const { check_network_connection } = require('./helpers/check_network_connection.js');
 
 client.connect(err => {
   if (err) {
@@ -87,5 +88,6 @@ client_connect_mqtt.on('message', (topic_mqtt, data_ebox) => {
 });
 
 cron.schedule('0 * * * *', async () => {
+  await check_network_connection();
   subscribe_to_topic_mqtt();
 });
