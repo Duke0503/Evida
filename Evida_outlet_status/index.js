@@ -8,11 +8,13 @@ const { fetch_ebox_id } = require('./helpers/fetch_ebox_id');
 const { handle_message_mqtt } = require('./helpers/handle_message_mqtt');
 const { check_time_outlet } = require('./helpers/check_time_outlet');
 const { check_network_connection } = require('./helpers/check_network_connection');
+const { create_outlet_data_table, create_outlets_table } = require('./helpers/create_table');
 
 const initialize = async () => {
   await check_network_connection();
 
   const client_connect_mqtt = mqtt_connection.connect();
+
   client.connect(err => {
     if (err) {
       console.error('Error connecting to PostgreSQL', err);
@@ -20,6 +22,9 @@ const initialize = async () => {
       console.log('Connected to PostgreSQL');
     }
   });
+  
+  await create_outlet_data_table();
+  await create_outlets_table();
 
   process.on('exit', () => {
     client.end();
@@ -37,7 +42,7 @@ const initialize = async () => {
   client_connect_mqtt.on('connect', async() => {
     try {
       const list_ebox_id = await fetch_ebox_id();
-
+      
       list_ebox_id.forEach(ebox => {
         const ebox_id = ebox.split('_')[1];
         topics_mqtt.push(SE_topic_mqtt + ebox_id); 
@@ -75,4 +80,9 @@ const initialize = async () => {
   });
 };
 
+cron.schedule('0 0 * * *', () => {
+  initialize();
+});
+
 initialize();
+

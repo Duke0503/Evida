@@ -2,8 +2,9 @@ require('dotenv').config();
 const ping = require('ping');
 const { fetch_ebox_data, fetch_user_data, fetch_transaction_data } = require('./helpers/fetch_api');
 const client = require('./config/database.js');
+const { create_app_user_table, create_boxes_table, create_transaction_table } = require('./helpers/create_table.js');
 
-const host = 'google.com'; // or any host you want to ping
+const host = 'google.com';
 
 function check_network_connection() {
   return new Promise((resolve) => {
@@ -33,6 +34,10 @@ async function fetch_data_from_api() {
     }
   });
 
+  await create_app_user_table();
+  await create_boxes_table();
+  await create_transaction_table();
+  
   process.on('exit', () => {
     client.end();
   });

@@ -15,8 +15,11 @@ const fetch_ebox_id = () => {
         }
         axios.get(process.env.API_EBOXES, { headers: headers })
           .then(response_boxes => {
-            const Ebox_id = response_boxes.data['hydra:member'].map(element => element.uniqueId);
-            resolve(Ebox_id);
+            const Ebox_ids = response_boxes.data['hydra:member']
+              .filter(element => element.status === true)
+              .map(element => element.uniqueId);
+              
+            resolve(Ebox_ids);
           })
           .catch(error => {
             reject(error);

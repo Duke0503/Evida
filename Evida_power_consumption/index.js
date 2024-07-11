@@ -34,7 +34,7 @@ const initialize = async () => {
 
   const subscribe_to_topic_mqtt = async () => {
     try {
-      const list_ebox_id = await fetch_ebox_id();
+      const list_ebox_id = await fetch_ebox_id(message_buffer_consumption);
 
       list_ebox_id.forEach(ebox => {
         const ebox_id = ebox.split('_')[1];
@@ -71,7 +71,7 @@ const initialize = async () => {
         }
       });
     });
-
+    
     setTimeout(save_data, 1000);
   };
 

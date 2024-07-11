@@ -1,6 +1,8 @@
 const { insert_query } = require('./insert_query');
+const { create_power_consumption_table } = require('./create_power_consumption_table');
 
-const insert_data = (message_buffer_consumption) => {
+const insert_data = async (message_buffer_consumption) => {
+  await create_power_consumption_table();
   const messages_consumption = Object.values(message_buffer_consumption);
   messages_consumption.forEach(async message_consumption => {
     if (!message_consumption.power_consumption) {
@@ -12,6 +14,7 @@ const insert_data = (message_buffer_consumption) => {
 
     insert_query(
       message_consumption.ebox_id,
+      message_consumption.ebox_name,
       new Date(),
       message_consumption.outlet_0_status,
       message_consumption.outlet_1_status,

@@ -2,6 +2,7 @@ const client = require('../config/database');
 
 const insert_query = async (
   ebox_id,
+  ebox_name,
   timestamp,
   outlet_0_status,
   outlet_1_status,
@@ -20,6 +21,7 @@ const insert_query = async (
   const insertQuery = `
     INSERT INTO power_consumption (
       ebox_id, 
+      ebox_name,
       timestamp,
       outlet_0_status,
       outlet_1_status,
@@ -37,7 +39,7 @@ const insert_query = async (
       created_at,
       updated_at
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW(), NOW())
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
   `;
   if (ebox_status == 0) {
     ebox_status = 'online';
@@ -46,6 +48,7 @@ const insert_query = async (
   }
   const values = [
     ebox_id,
+    ebox_name,
     timestamp,
     outlet_0_status,
     outlet_1_status,

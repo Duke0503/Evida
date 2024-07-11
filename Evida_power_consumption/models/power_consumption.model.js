@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const consumptionSchema = new mongoose.Schema({
   ebox_id: String,
   timestamp: String,
+  ebox_name: String,
   outlet_0_status: Number,
   outlet_1_status: Number,
   outlet_2_status: Number,
