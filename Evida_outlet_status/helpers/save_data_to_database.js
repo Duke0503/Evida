@@ -9,7 +9,7 @@ const save_data_to_database = async (
   } else box_status = 'offline';
 
   if (outlet.outlet_status != 2) {
-
+    
     await insert_query(
       outlet.ebox_id,
       new Date(),

@@ -1,4 +1,5 @@
 const client = require('../config/database');
+const { find_outlet_by_outlet_id_and_outlet_id } = require('./find_outlet_by_outlet_id_and_outlet_id');
 
 const insert_query = async (
   ebox_id,
@@ -11,9 +12,34 @@ const insert_query = async (
   power_factor,
   power_consumption,
 ) => {
-  const insertQuery = `
-    INSERT INTO outlet_data (
-      ebox_id, 
+  const outlet_data = await find_outlet_by_outlet_id_and_outlet_id(ebox_id, outlet_id);
+  let outlet_timestamp;
+  let input_timestamp;
+  if(outlet_data) {
+    outlet_timestamp = new Date(outlet_data.timestamp).toISOString().split('.')[0];
+    input_timestamp = new Date(timestamp).toISOString().split('.')[0];
+  }
+
+  if (!outlet_data || outlet_data.outlet_status != outlet_status ||  outlet_timestamp != input_timestamp) {
+    console.log(outlet_data);
+    const insertQuery = `
+      INSERT INTO outlet_data (
+        ebox_id, 
+        timestamp,
+        outlet_id,
+        box_status,
+        outlet_status,
+        current,
+        voltage,
+        power_factor,
+        power_consumption,
+        created_at,
+        updated_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+    `;
+    values = [
+      ebox_id,
       timestamp,
       outlet_id,
       box_status,
@@ -22,28 +48,15 @@ const insert_query = async (
       voltage,
       power_factor,
       power_consumption,
-      created_at,
-      updated_at
-    )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
-  `;
-  values = [
-    ebox_id,
-    timestamp,
-    outlet_id,
-    box_status,
-    outlet_status,
-    current,
-    voltage,
-    power_factor,
-    power_consumption,
-  ]; 
+    ]; 
 
-  try {
-    await client.query(insertQuery, values);
-  } catch (err) {
-    console.error('Error inserting row', err);
-  }
+    try {
+      await client.query(insertQuery, values);
+    } catch (err) {
+      console.error('Error inserting row', err);
+    }
+  };
+  
 };
 
 module.exports = { insert_query };

@@ -23,8 +23,8 @@ const initialize = async () => {
     }
   });
   
-  await create_outlet_data_table();
-  await create_outlets_table();
+  create_outlet_data_table();
+  create_outlets_table();
 
   process.on('exit', () => {
     client.end();
