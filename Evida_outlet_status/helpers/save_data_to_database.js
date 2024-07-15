@@ -7,19 +7,22 @@ const save_data_to_database = async (
   if (outlet.ebox_status == 0) {
     box_status = 'online';
   } else box_status = 'offline';
-
+  console.log(outlet);
   if (outlet.outlet_status != 2) {
     
     await insert_query(
       outlet.ebox_id,
+      outlet.ebox_name,
       new Date(),
       outlet.outlet_id,
       box_status,
       outlet.outlet_status,
-      0,
-      0,
-      0,
-      0,
+      outlet.current_system / 1000,
+      outlet.current_device / 1000,
+      outlet.voltage_system,
+      outlet.voltage_device,
+      outlet.power_factor,
+      outlet.power_consumption / (3.6 * 1000 * 1000),
     )
   } else {
     if (
@@ -31,17 +34,20 @@ const save_data_to_database = async (
 
       await insert_query(
         outlet.ebox_id,
+        outlet.ebox_name,
         new Date(),
         outlet.outlet_id,
         box_status,
         outlet.outlet_status,
-        outlet.current / 1000,
-        outlet.voltage,
+        outlet.current_system / 1000,
+        outlet.current_device / 1000,
+        outlet.voltage_system,
+        outlet.voltage_device,
         outlet.power_factor,
         outlet.power_consumption / (3.6 * 1000 * 1000),
       );
-    }
-  }
+    };
+  };
   
 };
 

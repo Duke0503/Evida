@@ -5,6 +5,7 @@ const handle_status_data_outlet = async (
   ebox_id,
   data_ebox,
   list_ebox_outlet,
+  ebox_data,
 ) => {
   const list_outlet = data_ebox.toString().split(',');
 
@@ -19,15 +20,19 @@ const handle_status_data_outlet = async (
         list_ebox_outlet[ebox_outlet_id] = {
           outlet_id : Number(outlet_id),
           ebox_id : 'Ebox_' + ebox_id,
+          ebox_name: ebox_data['Ebox_' + ebox_id].ebox_name,
           ebox_status: Number(list_outlet[list_outlet.length - 1].split('-')[1]),  
           outlet_status: Number(outlet_status),
-          current: 0,
-          voltage: 0,
+          current_system: 0,
+          current_device: 0,
+          voltage_system: 0,
+          voltage_device: 0,
           power_factor: 0,
           power_consumption: 0,
         };
         
         const outlet = await find_outlet_by_name(ebox_outlet_id);
+        
         if (outlet.rowCount == 0) {
 
           await insert_outlet(ebox_outlet_id, outlet_status);
@@ -36,9 +41,8 @@ const handle_status_data_outlet = async (
           list_ebox_outlet[ebox_outlet_id].outlet_status = outlet.rows[0].outlet_status;
         };
       };
-
+      
       if (list_ebox_outlet[ebox_outlet_id].outlet_status != Number(outlet_status)) {
-        
         await update_status_outlet(ebox_outlet_id, outlet_status);
 
         list_ebox_outlet[ebox_outlet_id].outlet_status = Number(outlet_status);

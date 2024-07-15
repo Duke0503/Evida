@@ -14,22 +14,24 @@ const handle_current_data_outlet = async (
     const ebox_outlet_id = 'Ebox_' + ebox_id + '_' + outlet_id;
     if (list_ebox_outlet[ebox_outlet_id]) {
       if (list_ebox_outlet[ebox_outlet_id].outlet_status == 2) {
-        if (list_ebox_outlet[ebox_outlet_id].current == 0) {
-          list_ebox_outlet[ebox_outlet_id].current = Number(outlet_current);
+        if (list_ebox_outlet[ebox_outlet_id].current_system == 0) {
+          list_ebox_outlet[ebox_outlet_id].current_system = Number(outlet_current);
         } else {
-          if (Number(outlet_current) - list_ebox_outlet[ebox_outlet_id].current > 1000
-            || Number(outlet_current) - list_ebox_outlet[ebox_outlet_id].current < -1000) {
+          if (Number(outlet_current) - list_ebox_outlet[ebox_outlet_id].current_system > 1000
+            || Number(outlet_current) - list_ebox_outlet[ebox_outlet_id].current_system < -1000) {
 
             await update_outlet(ebox_outlet_id);
 
-            list_ebox_outlet[ebox_outlet_id].current = Number(outlet_current);
+            list_ebox_outlet[ebox_outlet_id].current_system = Number(outlet_current);
 
             save_data_to_database(list_ebox_outlet[ebox_outlet_id]);
 
-          };
+          } else {
+            list_ebox_outlet[ebox_outlet_id].current_system = Number(outlet_current);
+          }
         };
       } else {
-        list_ebox_outlet[ebox_outlet_id].current = 0;
+        list_ebox_outlet[ebox_outlet_id].current_system = Number(outlet_current);
       };
     };
   };

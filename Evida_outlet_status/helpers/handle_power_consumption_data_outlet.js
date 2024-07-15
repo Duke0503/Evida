@@ -26,10 +26,12 @@ const handle_power_consumption_data_outlet = async (
 
             save_data_to_database(list_ebox_outlet[ebox_outlet_id]);
 
-          };
+          } else {
+            list_ebox_outlet[ebox_outlet_id].power_consumption =Number(outlet_power_consumption);
+          }
         };
       } else {
-        list_ebox_outlet[ebox_outlet_id].power_consumption = 0;
+        list_ebox_outlet[ebox_outlet_id].power_consumption = Number(outlet_power_consumption);
       };
     };
   };

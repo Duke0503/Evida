@@ -3,11 +3,13 @@ const { handle_current_data_outlet} = require('./handle_current_data_outlet');
 const { handle_power_consumption_data_outlet } = require('./handle_power_consumption_data_outlet');
 const { handle_power_factor_data_outlet } = require('./handle_power_factor_data_outlet');
 const { handle_voltage_data_outlet } = require('./handle_voltage_data_outlet');
+const { handle_PME_data_outlet } = require('./handle_PME_data_outlet');
 
 const handle_message_mqtt = (
   topic_mqtt,
   data_ebox,
   list_ebox_outlet,
+  ebox_data
 ) => {
   const topic_ebox_id= topic_mqtt.split('_');
   const topic = topic_ebox_id[0];
@@ -19,6 +21,7 @@ const handle_message_mqtt = (
         ebox_id,
         data_ebox,
         list_ebox_outlet,
+        ebox_data,
       );
       break;
     case 'AEbox':
@@ -44,6 +47,13 @@ const handle_message_mqtt = (
       break;
     case 'VEbox':     
       handle_voltage_data_outlet(
+        ebox_id,
+        data_ebox,
+        list_ebox_outlet,
+      );
+      break;
+    case 'PMEbox':
+      handle_PME_data_outlet(
         ebox_id,
         data_ebox,
         list_ebox_outlet,

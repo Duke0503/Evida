@@ -5,6 +5,7 @@ const handle_power_factor_data_outlet = async (
   ebox_id,
   data_ebox,
   list_ebox_outlet,
+  ebox_data,
 ) => {
   const list_outlet = data_ebox.toString().split(',');
   for (let count = 0; count < list_outlet.length - 1; count++) {
@@ -26,10 +27,12 @@ const handle_power_factor_data_outlet = async (
 
             save_data_to_database(list_ebox_outlet[ebox_outlet_id]);
 
-          };
+          } else {
+            list_ebox_outlet[ebox_outlet_id].power_factor = Number(outlet_power_factor);
+          }
         };
       } else {
-        list_ebox_outlet[ebox_outlet_id].power_factor = 0;
+        list_ebox_outlet[ebox_outlet_id].power_factor = Number(outlet_power_factor);
       };
     };
   };

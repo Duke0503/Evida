@@ -8,7 +8,7 @@ const handle_voltage_data_outlet = (
 
   for (let outlet_id = 0; outlet_id < 10; outlet_id ++) {
     if (list_ebox_outlet['Ebox_' + ebox_id + '_' + outlet_id.toString()]) {
-      list_ebox_outlet['Ebox_' + ebox_id + '_' + outlet_id.toString()].voltage = Number(voltage);
+      list_ebox_outlet['Ebox_' + ebox_id + '_' + outlet_id.toString()].voltage_system = Number(voltage);
     };
   };
 };
