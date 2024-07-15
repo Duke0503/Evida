@@ -25,7 +25,7 @@ const insert_query = async (
   }
   
   if (!outlet_data || outlet_data.outlet_status != outlet_status ||  outlet_timestamp != input_timestamp) {
-    console.log(outlet_data);
+
     const insertQuery = `
       INSERT INTO outlet_data (
         ebox_id, 
