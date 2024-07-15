@@ -7,7 +7,7 @@ const save_data_to_database = async (
   if (outlet.ebox_status == 0) {
     box_status = 'online';
   } else box_status = 'offline';
-  console.log(outlet);
+
   if (outlet.outlet_status != 2) {
     
     await insert_query(
