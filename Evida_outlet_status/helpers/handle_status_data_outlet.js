@@ -23,6 +23,7 @@ const handle_status_data_outlet = async (
           ebox_name: ebox_data['Ebox_' + ebox_id].ebox_name,
           ebox_status: Number(list_outlet[list_outlet.length - 1].split('-')[1]),  
           outlet_status: Number(outlet_status),
+          system_status: 0,
           current_system: 0,
           current_device: 0,
           voltage_system: 0,

@@ -4,6 +4,7 @@ const { handle_power_consumption_data_outlet } = require('./handle_power_consump
 const { handle_power_factor_data_outlet } = require('./handle_power_factor_data_outlet');
 const { handle_voltage_data_outlet } = require('./handle_voltage_data_outlet');
 const { handle_PME_data_outlet } = require('./handle_PME_data_outlet');
+const { handle_CE_data_outlet } = require('./handle_CE_data_outlet');
 
 const handle_message_mqtt = (
   topic_mqtt,
@@ -58,6 +59,13 @@ const handle_message_mqtt = (
         data_ebox,
         list_ebox_outlet,
       );
+      break;
+    case 'CEbox':
+      handle_CE_data_outlet(
+        ebox_id,
+        data_ebox,
+        list_ebox_outlet,
+      )
   }
 }
 

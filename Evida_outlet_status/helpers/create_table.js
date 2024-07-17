@@ -10,6 +10,7 @@ const create_outlet_data_table = async () => {
       box_status text COLLATE pg_catalog."default",
       outlet_id integer,
       outlet_status integer,
+      system_status integer,
       "timestamp" timestamp without time zone,
       current_system real,
       current_device real,

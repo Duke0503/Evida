@@ -38,6 +38,7 @@ const initialize = async () => {
   const PFE_topic_mqtt = 'PFEbox_';
   const VE_topic_mqtt = 'VEbox_';
   const PME_topic_mqtt = 'PMEbox_';
+  const CE_topic_mqtt = 'CEbox_';
 
   let topics_mqtt = [];
   let list_ebox_outlet = [];
@@ -54,6 +55,7 @@ const initialize = async () => {
         topics_mqtt.push(PFE_topic_mqtt + ebox_id); 
         topics_mqtt.push(VE_topic_mqtt + ebox_id); 
         topics_mqtt.push(PME_topic_mqtt + ebox_id);
+        topics_mqtt.push(CE_topic_mqtt + ebox_id);
       });
 
       topics_mqtt.forEach(topic_mqtt => {
@@ -72,7 +74,6 @@ const initialize = async () => {
   });
 
   client_connect_mqtt.on('message', (topic_mqtt, data_ebox) => {
-
     handle_message_mqtt(
       topic_mqtt,
       data_ebox,

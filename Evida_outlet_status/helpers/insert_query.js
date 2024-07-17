@@ -8,6 +8,7 @@ const insert_query = async (
   outlet_id,
   box_status,
   outlet_status,
+  system_status,
   current_system,
   current_device,
   voltage_system,
@@ -26,7 +27,7 @@ const insert_query = async (
   
   if (!outlet_data || outlet_data.outlet_status != outlet_status ||  outlet_timestamp != input_timestamp) {
 
-    const insertQuery = `
+    const insert_query = `
       INSERT INTO outlet_data (
         ebox_id, 
         ebox_name,
@@ -34,6 +35,7 @@ const insert_query = async (
         outlet_id,
         box_status,
         outlet_status,
+        system_status,
         current_system,
         current_device,
         voltage_system,
@@ -43,7 +45,7 @@ const insert_query = async (
         created_at,
         updated_at
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW())
     `;
     values = [
       ebox_id,
@@ -52,6 +54,7 @@ const insert_query = async (
       outlet_id,
       box_status,
       outlet_status,
+      system_status,
       current_system,
       current_device,
       voltage_system,
@@ -61,7 +64,7 @@ const insert_query = async (
     ]; 
 
     try {
-      await client.query(insertQuery, values);
+      await client.query(insert_query, values);
     } catch (err) {
       console.error('Error inserting row', err);
     }
