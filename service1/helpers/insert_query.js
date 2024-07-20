@@ -170,13 +170,14 @@ const insert_transaction_query = async(
   discount_amount,
   promotion_code,
   promotion_discount,
-  activation_fee_discount,
+  activation_fee,
   paid,
   total_consumed_fee,
   reason_closed,
   created_at,
   updated_at
 ) => {
+  console.log(reason_closed)
   const { date: startDate, time: startTime } = convert_unix_to_date_time(start_time);
   const { date: endDate, time: endTime } = convert_unix_to_date_time(end_time);
 
@@ -197,7 +198,7 @@ const insert_transaction_query = async(
       discount_amount,
       promotion_code,
       promotion_discount,
-      activation_fee_discount,
+      activation_fee,
       paid,
       total_consumed_fee,
       reason_closed,
@@ -219,7 +220,7 @@ const insert_transaction_query = async(
       discount_amount = EXCLUDED.discount_amount,
       promotion_code = EXCLUDED.promotion_code,
       promotion_discount = EXCLUDED.promotion_discount,
-      activation_fee_discount = EXCLUDED.activation_fee_discount,
+      activation_fee = EXCLUDED.activation_fee,
       paid = EXCLUDED.paid,
       total_consumed_fee = EXCLUDED.total_consumed_fee,
       reason_closed = EXCLUDED.reason_closed,
@@ -244,7 +245,7 @@ const insert_transaction_query = async(
     discount_amount,
     promotion_code,
     promotion_discount,
-    activation_fee_discount,
+    activation_fee,
     paid,
     total_consumed_fee,
     reason_closed,

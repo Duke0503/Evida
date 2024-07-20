@@ -131,6 +131,7 @@ const fetch_transaction_data = async () => {
       await axios.get(`${process.env.API_TRANSACTIONS}${number_page}`, { headers: headers })
         .then(response => {
           response.data['hydra:member'].forEach(async transaction => {
+
             if (last_created_time == null) {
               await insert_transaction_query(
                 transaction.id,
@@ -146,7 +147,7 @@ const fetch_transaction_data = async () => {
                 transaction.discountAmount,
                 transaction.promotionCode,
                 transaction.promotionDiscount,
-                transaction.activationFeeDiscount,
+                transaction.activationFee,
                 transaction.paid,
                 transaction.totalConsumedFee,
                 transaction.reasonClosed,
@@ -156,7 +157,7 @@ const fetch_transaction_data = async () => {
             } 
             else {
               if (new Date(transaction.createdAt) > last_created_time || new Date(transaction.updatedAt) > last_updated_time) {
-
+                console.log(transaction.reasonClosed)
                 await insert_transaction_query(
                   transaction.id,
                   transaction.invoiceId,
@@ -171,7 +172,7 @@ const fetch_transaction_data = async () => {
                   transaction.discountAmount,
                   transaction.promotionCode,
                   transaction.promotionDiscount,
-                  transaction.activationFeeDiscount,
+                  transaction.activationFee,
                   transaction.paid,
                   transaction.totalConsumedFee,
                   transaction.reasonClosed,

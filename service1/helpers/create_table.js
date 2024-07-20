@@ -86,7 +86,7 @@ const create_transaction_table = async () => {
       discount_amount real,
       promotion_code text COLLATE pg_catalog."default",
       promotion_discount real,
-      activation_fee_discount real,
+      activation_fee real,
       paid real,
       total_consumed_fee real,
       reason_closed text COLLATE pg_catalog."default",

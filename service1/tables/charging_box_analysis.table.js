@@ -18,7 +18,7 @@ SELECT
     SUM(Trans.total_fee) AS kWh_FEE,
     SUM(Trans.promotion_discount) AS PROMOTION,
     SUM(Trans.total_fee) + SUM(Trans.total_fee) - SUM(Trans.promotion_discount) AS TOTAL_COST_VNĐ,
-    CASE WHEN COUNT(Trans.invoice_id) > 39 THEN 100 ELSE (COUNT(Trans.invoice_id)::float / 40) * 100 END AS EFFECTIVE
+    CASE WHEN COUNT(Trans.invoice_id) > 39 THEN 100 ELSE ROUND((COUNT(Trans.invoice_id)::numeric / 40) * 100, 2) END AS EFFECTIVE
 FROM public.valid_transaction Trans
 GROUP BY Trans.box_id, EXTRACT(YEAR FROM Trans.merged_start_time), EXTRACT(MONTH FROM Trans.merged_start_time), date_trunc('month', Trans.merged_start_time) + interval '1 month - 1 day'
 ORDER BY YEAR_ DESC, MONTH_ DESC;

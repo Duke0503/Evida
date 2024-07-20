@@ -47,7 +47,7 @@ async function fetch_data_from_api() {
   await fetch_ebox_data();
   await fetch_user_data();
   await fetch_transaction_data();
-  await handle_data();
+  // await handle_data();
 
 }
 
