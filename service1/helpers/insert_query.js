@@ -177,7 +177,6 @@ const insert_transaction_query = async(
   created_at,
   updated_at
 ) => {
-  console.log(reason_closed)
   const { date: startDate, time: startTime } = convert_unix_to_date_time(start_time);
   const { date: endDate, time: endTime } = convert_unix_to_date_time(end_time);
 
