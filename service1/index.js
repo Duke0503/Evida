@@ -44,16 +44,13 @@ async function fetch_data_from_api() {
     client.end();
   });
 
-  // await fetch_ebox_data();
-  // await fetch_user_data();
-  // await fetch_transaction_data();
+  await fetch_ebox_data();
+  await fetch_user_data();
+  await fetch_transaction_data();
   await handle_data();
 
 }
 
-// cron.schedule(' 0 0 * * *', async () => {
-//   fetch_data_from_api();
-// });
 fetch_data_from_api();
 
 

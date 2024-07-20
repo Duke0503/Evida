@@ -225,7 +225,7 @@ const insert_transaction_query = async(
       reason_closed = EXCLUDED.reason_closed,
       created_at = EXCLUDED.created_at,
       updated_at = EXCLUDED.updated_at
-    WHERE transactions.updated_at IS DISTINCT FROM EXCLUDED.updated_at;
+    WHERE transactions.updated_at IS DISTINCT FROM EXCLUDED.updated_at;    
   `;
 
   const values = [

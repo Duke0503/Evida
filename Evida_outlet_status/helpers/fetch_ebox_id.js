@@ -1,19 +1,19 @@
 const axios = require('axios');
 
-const fetch_ebox_id = (ebox_data) => {
-  return new Promise((resolve, reject) => {
+const fetch_ebox_id = async (ebox_data) => {
+  return new Promise(async (resolve, reject) => {
     const login_user = {
       username: process.env.USERNAME_API,
       password: process.env.PASSWORD_API
     };
 
-    axios.post(process.env.API_LOGIN, login_user)
-      .then(response_login => {
+    await axios.post(process.env.API_LOGIN, login_user)
+      .then(async response_login => {
         const token_authorization = response_login.data.token;
         const headers = {
           'Authorization': `Bearer ${token_authorization}`
         }
-        axios.get(process.env.API_EBOXES, { headers: headers })
+        await axios.get(process.env.API_EBOXES, { headers: headers })
           .then(response_boxes => {
             const Ebox_ids = response_boxes.data['hydra:member']
               .filter(element => element.status === true)

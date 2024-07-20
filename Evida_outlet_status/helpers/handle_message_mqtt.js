@@ -6,7 +6,7 @@ const { handle_voltage_data_outlet } = require('./handle_voltage_data_outlet');
 const { handle_PME_data_outlet } = require('./handle_PME_data_outlet');
 const { handle_CE_data_outlet } = require('./handle_CE_data_outlet');
 
-const handle_message_mqtt = (
+const handle_message_mqtt = async (
   topic_mqtt,
   data_ebox,
   list_ebox_outlet,

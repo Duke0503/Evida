@@ -12,6 +12,8 @@ const create_outlet_data_table = async () => {
       outlet_status integer,
       system_status integer,
       "timestamp" timestamp without time zone,
+      user_id integer,
+      user_name text,
       current_system real,
       current_device real,
       voltage_system real,
@@ -38,6 +40,8 @@ const create_outlet_data_table = async () => {
 
 const create_outlets_table = async () => {
   const create_outlets_query = `
+    DROP TABLE IF EXISTS public.outlets;
+
     CREATE TABLE IF NOT EXISTS public.outlets
     (
         name text COLLATE pg_catalog."default" NOT NULL,

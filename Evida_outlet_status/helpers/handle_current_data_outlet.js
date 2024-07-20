@@ -1,5 +1,4 @@
 const { save_data_to_database } = require('./save_data_to_database');
-const { update_outlet } = require('./outlets_sql');
 
 const handle_current_data_outlet = async (
   ebox_id,
@@ -19,8 +18,6 @@ const handle_current_data_outlet = async (
         } else {
           if (Number(outlet_current) - list_ebox_outlet[ebox_outlet_id].current_system > 1000
             || Number(outlet_current) - list_ebox_outlet[ebox_outlet_id].current_system < -1000) {
-
-            await update_outlet(ebox_outlet_id);
 
             list_ebox_outlet[ebox_outlet_id].current_system = Number(outlet_current);
 

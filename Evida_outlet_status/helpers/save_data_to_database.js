@@ -17,7 +17,7 @@ const save_data_to_database = async (
     outlet.outlet_status,
     outlet.system_status,
     outlet.current_system / 1000,
-    outlet.current_device / 1000,
+    outlet.current_device,
     outlet.voltage_system,
     outlet.voltage_device,
     outlet.power_factor,

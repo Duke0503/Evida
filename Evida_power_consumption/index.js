@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const mqtt_connection = require('./config/mqtt');
-const cron = require('node-cron');
 const client = require('./config/database.js');
 const { fetch_ebox_id } = require('./helpers/fetch_ebox_id');
 const { handle_message_mqtt } = require('./helpers/handle_message_mqtt');
@@ -48,7 +47,8 @@ const initialize = async () => {
         client_connect_mqtt.subscribe(topic_mqtt, err => {
           if (err) {
             console.error(`Failed to subscribe to topic ${topic_mqtt}:`, err);
-          } else {
+          } 
+          else {
             console.log(`Subscribed to topic ${topic_mqtt}`);
           }
         });
@@ -88,10 +88,7 @@ const initialize = async () => {
     );
   });
 
-  cron.schedule('0 * * * *', async () => {
-    await check_network_connection();
-    subscribe_to_topic_mqtt();
-  });
+  subscribe_to_topic_mqtt();
 };
 
 initialize();

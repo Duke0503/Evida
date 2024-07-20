@@ -63,9 +63,9 @@ const initialize = async () => {
           if (err) {
             console.error(`Failed to subscribe to topic ${topic_mqtt}:`, err);
           } 
-          else {
-            console.log(`Subscribed to topic ${topic_mqtt}`);
-          };
+          // else {
+          //   console.log(`Subscribed to topic ${topic_mqtt}`);
+          // };
         });
       });
     } catch (error) {
@@ -86,10 +86,6 @@ const initialize = async () => {
     check_time_outlet(list_ebox_outlet, ebox_data);
   });
 };
-
-cron.schedule('0 0 * * *', () => {
-  initialize();
-});
 
 initialize();
 

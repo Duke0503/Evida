@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { login } = require('./login');
 const { insert_ebox_query, insert_user_query, insert_transaction_query } = require('./insert_query');
+const { get_the_last_created_time_transaction } = require('./get_the_last_created_time_transaction');
 
 const fetch_ebox_data = async () => {
   const headers = await login();
@@ -56,11 +57,11 @@ const fetch_user_data = async () => {
     for (let number_page = 1; number_page <= Math.ceil(number_of_user / 100); number_page++) {
       await axios.get(`${process.env.API_USERS}${number_page}`, { headers: headers })
         .then(response_users => {
-          response_users.data['hydra:member'].forEach(user => {
+          response_users.data['hydra:member'].forEach(async user => {
             let bike_brand = user.bikeBrand ? user.bikeBrand.name : '';
             let bike_model = user.bikeModel ? user.bikeModel.name : '';
 
-            insert_user_query(
+            await insert_user_query(
               user.id,
               user.name,
               user.email,
@@ -98,9 +99,20 @@ const fetch_user_data = async () => {
 
 const fetch_transaction_data = async () => {
   try {
+
+    const last_created_time = await get_the_last_created_time_transaction();
+
+    const current_time = new Date();
+
+    const midnight = new Date(current_time);
+
+    midnight.setHours(0, 0, 0, 0);
+
+    const last_updated_time = new Date(midnight.getTime() - 24 * 60 * 60 * 1000);
+
     const headers = await login();
 
-    let number_of_transaction = 0;
+    let number_of_transaction = '';
 
     // Fetch the total number of transactions
     await axios.get(process.env.API_TRANSACTIONS_TOTALITEMS, { headers: headers })
@@ -111,32 +123,67 @@ const fetch_transaction_data = async () => {
         console.error('Error fetching total number of transactions:', error);
       });
 
+    let should_continue = true;
     // Fetch transactions page by page
     for (let number_page = 1; number_page <= Math.ceil(number_of_transaction / 100); number_page++) {
+      if ( !should_continue) break;
+
       await axios.get(`${process.env.API_TRANSACTIONS}${number_page}`, { headers: headers })
         .then(response => {
-          response.data['hydra:member'].forEach(transaction => {
-            insert_transaction_query(
-              transaction.id,
-              transaction.invoiceId,
-              transaction.startTime,
-              transaction.endTime,
-              transaction.user.id,
-              transaction.box.uniqueId,
-              transaction.outlet.uniqueId,
-              transaction.wattageConsumed,
-              transaction.totalFee,
-              transaction.status,
-              transaction.discountAmount,
-              transaction.promotionCode,
-              transaction.promotionDiscount,
-              transaction.activationFeeDiscount,
-              transaction.paid,
-              transaction.totalConsumedFee,
-              transaction.reasonClosed,
-              transaction.createdAt,
-              transaction.updatedAt
-            );
+          response.data['hydra:member'].forEach(async transaction => {
+            if (last_created_time == null) {
+              await insert_transaction_query(
+                transaction.id,
+                transaction.invoiceId,
+                transaction.startTime,
+                transaction.endTime,
+                transaction.user.id,
+                transaction.box.uniqueId,
+                transaction.outlet.uniqueId,
+                transaction.wattageConsumed,
+                transaction.totalFee,
+                transaction.status,
+                transaction.discountAmount,
+                transaction.promotionCode,
+                transaction.promotionDiscount,
+                transaction.activationFeeDiscount,
+                transaction.paid,
+                transaction.totalConsumedFee,
+                transaction.reasonClosed,
+                transaction.createdAt,
+                transaction.updatedAt
+              );
+            } 
+            else {
+              if (new Date(transaction.createdAt) > last_created_time || new Date(transaction.updatedAt) > last_updated_time) {
+
+                await insert_transaction_query(
+                  transaction.id,
+                  transaction.invoiceId,
+                  transaction.startTime,
+                  transaction.endTime,
+                  transaction.user.id,
+                  transaction.box.uniqueId,
+                  transaction.outlet.uniqueId,
+                  transaction.wattageConsumed,
+                  transaction.totalFee,
+                  transaction.status,
+                  transaction.discountAmount,
+                  transaction.promotionCode,
+                  transaction.promotionDiscount,
+                  transaction.activationFeeDiscount,
+                  transaction.paid,
+                  transaction.totalConsumedFee,
+                  transaction.reasonClosed,
+                  transaction.createdAt,
+                  transaction.updatedAt
+                );
+              } else {
+                should_continue = false;
+                return;
+              }
+            }
+            
           });
         })
         .catch(error => {
@@ -145,7 +192,6 @@ const fetch_transaction_data = async () => {
 
       console.log(`Processed transactions for page: ${number_page}`);
 
-      // Delay 1 second before the next request
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
   } catch (error) {
