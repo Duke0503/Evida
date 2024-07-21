@@ -1,7 +1,8 @@
 const client = require('../config/database');
 const { find_outlet_by_outlet_id_and_outlet_id } = require('./find_outlet_by_outlet_id_and_outlet_id');
 const { user_charging } = require('./get_user_charging');
-const { update_outlet } = require('./outlets_sql');
+const { update_outlet } = require('./outlet_status_sql');
+const { insert_outlet, find_outlet_by_name } = require('./outlets_sql');
 
 const insert_query = async (
   ebox_id,
@@ -18,9 +19,13 @@ const insert_query = async (
   power_factor,
   power_consumption,
 ) => {
-  const outlet_data = await find_outlet_by_outlet_id_and_outlet_id(ebox_id, outlet_id);
+  // const outlet_data = await find_outlet_by_outlet_id_and_outlet_id(ebox_id, outlet_id);
+  const outlet_ = await find_outlet_by_name(`${ebox_id}_${outlet_id}`);
 
-  if (!outlet_data) {
+  const outlet = outlet_.rows[0];
+  console.log(outlet)
+  if (!outlet) {
+    console.log("1")
     await insert_query_statemnet(
       ebox_id,
       ebox_name,
@@ -37,7 +42,8 @@ const insert_query = async (
       power_consumption,
     )
   } else {
-    if (outlet_data.outlet_status != outlet_status) {
+    if (outlet.outlet_status != outlet_status) {
+      console.log("2")
       await insert_query_statemnet(
         ebox_id,
         ebox_name,
@@ -55,11 +61,12 @@ const insert_query = async (
       )
     } else {
       if ( outlet_status == 2) {
-        if (current_system - outlet_data.cerrent_system > 1 || current_system - outlet_data.cerrent_system < -1 ||
-          power_factor - outlet_data.power_factor > 20 || power_factor - outlet_data.power_factor < -20 ||
-          power_consumption - outlet_data.power_consumption > 1 || power_consumption - outlet_data.power_consumption < -1 ||
-          is_greater_than_by_minutes(timestamp, outlet_data.timestamp, 15)
+        if (current_system - outlet.current_system > 1 || current_system - outlet.current_system < -1 ||
+          power_factor - outlet.power_factor > 20 || power_factor - outlet.power_factor < -20 ||
+          power_consumption - outlet.power_consumption > 1 || power_consumption - outlet.power_consumption < -1 ||
+          is_greater_than_by_minutes(timestamp, outlet.timestamp, 15)
         ) {
+          console.log("3")
           await insert_query_statemnet(
             ebox_id,
             ebox_name,
@@ -77,7 +84,8 @@ const insert_query = async (
           )
         }
       } else {
-        if (is_greater_than_by_minutes(timestamp, outlet_data.timestamp, 60)) {
+        if (is_greater_than_by_minutes(timestamp, outlet.timestamp, 60)) {
+          console.log("4")
           await insert_query_statemnet(
             ebox_id,
             ebox_name,
@@ -123,9 +131,29 @@ const insert_query_statemnet = async (
       user_id = user.id;
       user_name = user.name;
     }
+
+    console.log(user);
+    
   }
   await update_outlet(`${ebox_id}_${outlet_id}`);
-  
+  await insert_outlet(
+    `${ebox_id}_${outlet_id}`,
+    ebox_id, 
+    ebox_name,
+    timestamp,
+    user_id,
+    user_name,
+    outlet_id,
+    box_status,
+    outlet_status,
+    system_status,
+    current_system,
+    current_device,
+    voltage_system,
+    voltage_device,
+    power_factor,
+    power_consumption,
+  );
   const insert_query = `
     INSERT INTO outlet_data (
       ebox_id, 
@@ -148,7 +176,7 @@ const insert_query_statemnet = async (
     )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW(), NOW())
   `;
-  values = [
+  const values = [
     ebox_id,
     ebox_name,
     timestamp,

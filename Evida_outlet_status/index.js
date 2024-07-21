@@ -8,7 +8,7 @@ const { fetch_ebox_id } = require('./helpers/fetch_ebox_id');
 const { handle_message_mqtt } = require('./helpers/handle_message_mqtt');
 const { check_time_outlet } = require('./helpers/check_time_outlet');
 const { check_network_connection } = require('./helpers/check_network_connection');
-const { create_outlet_data_table, create_outlets_table } = require('./helpers/create_table');
+const { create_outlet_data_table, create_outlet_status_table, create_outlets_table } = require('./helpers/create_table');
 
 const initialize = async () => {
   await check_network_connection();
@@ -24,6 +24,7 @@ const initialize = async () => {
   });
   
   create_outlet_data_table();
+  create_outlet_status_table();
   create_outlets_table();
 
   process.on('exit', () => {

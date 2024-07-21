@@ -1,5 +1,6 @@
 const { save_data_to_database } = require('./save_data_to_database');
-const { find_outlet_by_name, insert_outlet, update_status_outlet } = require('./outlets_sql');
+const { find_outlet_status_by_name, insert_outlet_status, update_status_outlet } = require('./outlet_status_sql');
+const { find_outlet_by_name } = require('./outlets_sql');
 
 const handle_status_data_outlet = async (
   ebox_id,
@@ -32,15 +33,24 @@ const handle_status_data_outlet = async (
           power_consumption: 0,
         };
         
+        const outlet_status_data = await find_outlet_status_by_name(ebox_outlet_id);
+
         const outlet = await find_outlet_by_name(ebox_outlet_id);
         
-        if (outlet.rowCount == 0) {
+        if (outlet_status_data.rowCount == 0) {
+          await insert_outlet_status(ebox_outlet_id, outlet_status);
+        } 
 
-          await insert_outlet(ebox_outlet_id, outlet_status);
-
-        } else {
-          list_ebox_outlet[ebox_outlet_id].outlet_status = outlet.rows[0].outlet_status;
-        };
+        if (outlet.rowCount != 0) {
+          list_ebox_outlet[ebox_outlet_id].outlet_status = outlet.outlet_status;
+          list_ebox_outlet[ebox_outlet_id].system_status = outlet.system_status;
+          list_ebox_outlet[ebox_outlet_id].current_system = outlet.current_system;
+          list_ebox_outlet[ebox_outlet_id].current_device = outlet.current_device;
+          list_ebox_outlet[ebox_outlet_id].voltage_system = outlet.voltage_system;
+          list_ebox_outlet[ebox_outlet_id].voltage_device = outlet.voltage_device;
+          list_ebox_outlet[ebox_outlet_id].power_factor = outlet.power_factor;
+          list_ebox_outlet[ebox_outlet_id].power_consumption = outlet.power_consumption;
+        }
       };
       
       if (list_ebox_outlet[ebox_outlet_id].outlet_status != Number(outlet_status)) {

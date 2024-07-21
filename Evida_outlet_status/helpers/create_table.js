@@ -11,7 +11,7 @@ const create_outlet_data_table = async () => {
       outlet_id integer,
       outlet_status integer,
       system_status integer,
-      "timestamp" timestamp without time zone,
+      "timestamp" timestamp with time zone,
       user_id integer,
       user_name text,
       current_system real,
@@ -38,16 +38,52 @@ const create_outlet_data_table = async () => {
   };
 };
 
-const create_outlets_table = async () => {
-  const create_outlets_query = `
-    DROP TABLE IF EXISTS public.outlets;
-
-    CREATE TABLE IF NOT EXISTS public.outlets
+const create_outlet_status_table = async () => {
+  const create_outlet_status_query = `
+    CREATE TABLE IF NOT EXISTS public.outlet_status
     (
         name text COLLATE pg_catalog."default" NOT NULL,
         outlet_status integer,
-        update_time timestamp without time zone,
-        CONSTRAINT outlets_pkey PRIMARY KEY (name)
+        update_time timestamp with time zone,
+        CONSTRAINT outlet_status_pkey PRIMARY KEY (name)
+    )
+
+    TABLESPACE pg_default;
+
+    ALTER TABLE IF EXISTS public.outlet_status
+    OWNER to postgres;
+  `;
+
+  try {
+    await client.query(create_outlet_status_query);
+  } catch (err) {
+    console.error('Error executing query', err.stack);
+  };
+};
+
+const create_outlets_table = async () => {
+  const create_outlet_status_query = `
+    CREATE TABLE IF NOT EXISTS public.outlets
+    (
+      name text COLLATE pg_catalog."default" NOT NULL,
+      ebox_id text COLLATE pg_catalog."default",
+      ebox_name text,
+      box_status text COLLATE pg_catalog."default",
+      outlet_id integer,
+      outlet_status integer,
+      system_status integer,
+      "timestamp" timestamp with time zone,
+      user_id integer,
+      user_name text,
+      current_system real,
+      current_device real,
+      voltage_system real,
+      voltage_device real,
+      power_factor real,
+      power_consumption real,
+      created_at timestamp with time zone,
+      updated_at timestamp with time zone,
+      CONSTRAINT outlets_pkey PRIMARY KEY (name)
     )
 
     TABLESPACE pg_default;
@@ -57,7 +93,7 @@ const create_outlets_table = async () => {
   `;
 
   try {
-    await client.query(create_outlets_query);
+    await client.query(create_outlet_status_query);
   } catch (err) {
     console.error('Error executing query', err.stack);
   };
@@ -65,5 +101,6 @@ const create_outlets_table = async () => {
 
 module.exports = {
   create_outlet_data_table,
+  create_outlet_status_table,
   create_outlets_table,
 }
