@@ -23,9 +23,8 @@ const insert_query = async (
   const outlet_ = await find_outlet_by_name(`${ebox_id}_${outlet_id}`);
 
   const outlet = outlet_.rows[0];
-  console.log(outlet)
+
   if (!outlet) {
-    console.log("1")
     await insert_query_statemnet(
       ebox_id,
       ebox_name,
@@ -43,7 +42,6 @@ const insert_query = async (
     )
   } else {
     if (outlet.outlet_status != outlet_status) {
-      console.log("2")
       await insert_query_statemnet(
         ebox_id,
         ebox_name,
@@ -66,7 +64,6 @@ const insert_query = async (
           power_consumption - outlet.power_consumption > 1 || power_consumption - outlet.power_consumption < -1 ||
           is_greater_than_by_minutes(timestamp, outlet.timestamp, 15)
         ) {
-          console.log("3")
           await insert_query_statemnet(
             ebox_id,
             ebox_name,
@@ -85,7 +82,6 @@ const insert_query = async (
         }
       } else {
         if (is_greater_than_by_minutes(timestamp, outlet.timestamp, 60)) {
-          console.log("4")
           await insert_query_statemnet(
             ebox_id,
             ebox_name,
@@ -130,10 +126,7 @@ const insert_query_statemnet = async (
     if (user) {
       user_id = user.id;
       user_name = user.name;
-    }
-
-    console.log(user);
-    
+    } 
   }
   await update_outlet(`${ebox_id}_${outlet_id}`);
   await insert_outlet(
