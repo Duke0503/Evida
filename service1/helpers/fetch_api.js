@@ -157,7 +157,6 @@ const fetch_transaction_data = async () => {
             } 
             else {
               if (new Date(transaction.createdAt) > last_created_time || new Date(transaction.updatedAt) > last_updated_time) {
-                console.log(transaction.reasonClosed)
                 await insert_transaction_query(
                   transaction.id,
                   transaction.invoiceId,
