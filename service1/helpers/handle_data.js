@@ -13,13 +13,11 @@ const { trend_of_quarter_analysis } = require('../tables/trend_of_quarter_analys
 const handle_data = async () => {
     await valid_transaction();
     await insert_time_records();
-    
     await trend_of_month_analysis(); // Question 1_month
     await trend_of_quarter_analysis(); // Question 1_quarter
-
     await charging_outlet_analysis();  // Question 2
     await charging_box_analysis(); // Question 3
-    // await hour_analysis(); // Question 4
+    await hour_analysis(); // Question 4
     await user_analysis();
     await customer_group();
     await app_user_analysis(); // Question 5

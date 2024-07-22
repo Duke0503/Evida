@@ -14,11 +14,11 @@ WITH tmp AS (
         box_id,
         outlet_id,
         CASE 
-        	WHEN total_fee + paid > 0 THEN ROUND(paid::numeric / (total_fee::numeric + paid::numeric) * 100, 2) 
+        	WHEN (activation_fee + total_consumed_fee) > 0 THEN ROUND(activation_fee::numeric / (activation_fee::numeric + total_consumed_fee::numeric) * 100, 2) 
         	ELSE NULL 
     	END AS active_fee_percent,
 		CASE 
-			WHEN total_fee + paid > 0 THEN ROUND(100 - (paid::numeric / (total_fee::numeric + paid::numeric) * 100), 2) 
+			WHEN (activation_fee + total_consumed_fee)  > 0 THEN ROUND(total_consumed_fee::numeric / (activation_fee::numeric + total_consumed_fee::numeric) * 100, 2) 
 			ELSE NULL 
 		END AS kwh_fee_percent
 		

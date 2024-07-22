@@ -52,7 +52,7 @@ FROM (
             ELSE NULL 
         END AS "%REVENUE/REVENUE_WO", 
         CASE 
-            WHEN PAID_TOTAL + PROMOTION > 0 THEN ROUND((100 - PAID_TOTAL::numeric / (PAID_TOTAL::numeric + PROMOTION::numeric)) * 100, 2) 
+            WHEN PAID_TOTAL + PROMOTION > 0 THEN ROUND((100 - (PAID_TOTAL::numeric / (PAID_TOTAL::numeric + PROMOTION::numeric)) * 100), 2) 
             ELSE NULL 
         END AS "%PROMOTION/REVENUE_WO", 
         CASE 
@@ -85,9 +85,9 @@ FROM (
                 SUM(wattage_consumed) AS TOTAL_POWER, 
                 COUNT(invoice_id) AS NUMBER_CHARGING, 
                 SUM(activation_fee) AS ACTIVE_FEE, 
-                SUM(total_fee - activation_fee) AS kWh_FEE, 
+                SUM(total_consumed_fee) AS kWh_FEE, 
                 SUM(discount_amount) AS PROMOTION, 
-                COUNT(CASE WHEN promotion_discount > 0 THEN 1 ELSE NULL END) AS NUMBER_PROMOTION, 
+                COUNT(CASE WHEN discount_amount > 0 THEN 1 ELSE NULL END) AS NUMBER_PROMOTION, 
                 SUM(paid) AS PAID_TOTAL
             FROM valid_transaction 
             WHERE EXTRACT(YEAR FROM merged_start_time) = EXTRACT(YEAR FROM CURRENT_DATE)

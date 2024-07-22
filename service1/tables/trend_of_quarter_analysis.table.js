@@ -13,9 +13,9 @@ WITH trend_of_quarter_analysis AS (
         EXTRACT(QUARTER FROM merged_start_time) AS quarter_,
         DATE_TRUNC('quarter', merged_start_time) + INTERVAL '3 month - 1 day' AS time_,
         COUNT(DISTINCT user_id) AS total_user_on_quarter,
-        SUM(paid) AS total_w_o_revenue,
-        SUM(promotion_discount) AS total_promotion,
-        COUNT(CASE WHEN promotion_discount > 0 THEN 1 ELSE NULL END) AS number_of_promotion,
+        SUM(total_fee) AS total_w_o_revenue,
+        SUM(discount_amount) AS total_promotion,
+        COUNT(CASE WHEN discount_amount > 0 THEN 1 ELSE NULL END) AS number_of_promotion,
         SUM(paid) AS total_cost_vnd,
         COUNT(invoice_id) AS total_transaction,
         SUM(wattage_consumed) AS total_power,
@@ -159,7 +159,7 @@ SELECT
         ELSE NULL END AS diff_cost
     
 FROM trend_of_quarter_analysis t
-JOIN installed_box_per_quarter ib ON t.time_ = ib.quarter_year
+LEFT JOIN installed_box_per_quarter ib ON t.time_ = ib.quarter_year
 ORDER BY t.year_, t.quarter_;
 
 -- Adding primary key constraint

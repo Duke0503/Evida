@@ -13,9 +13,9 @@ WITH trend_of_month_analysis AS (
         LPAD(EXTRACT(MONTH FROM merged_start_time)::text, 2, '0') AS month_,
         DATE_TRUNC('month', merged_start_time) + INTERVAL '1 month - 1 day' AS time_,
         COUNT(DISTINCT user_id) AS total_user_on_month,
-        SUM(paid) AS total_w_o_revenue,
-        SUM(promotion_discount) AS total_promotion,
-        COUNT(CASE WHEN promotion_discount > 0 THEN 1 ELSE NULL END) AS number_of_promotion,
+        SUM(total_fee) AS total_w_o_revenue,
+        SUM(discount_amount) AS total_promotion,
+        COUNT(CASE WHEN discount_amount > 0 THEN 1 ELSE NULL END) AS number_of_promotion,
         SUM(paid) AS total_cost_vnd,
         COUNT(invoice_id) AS total_transaction,
         SUM(wattage_consumed) AS total_power,
@@ -59,7 +59,7 @@ SELECT
     t.time_::DATE AS time_current,
     t.total_user_on_month AS total_active_user,
     t.number_box_active,
-	ib.boxes_installed_in_month,
+	COALESCE(ib.boxes_installed_in_month, 0) AS boxes_installed_in_month,
     t.number_of_outlet,
     t.total_transaction,
     t.total_power,
@@ -80,7 +80,6 @@ SELECT
     
 	LAG(ib.boxes_installed_in_month, 1) OVER (ORDER BY t.time_) AS installed_box_prev_month,
     ib.boxes_installed_in_month - LAG(ib.boxes_installed_in_month, 1) OVER (ORDER BY t.time_) AS installed_box_compare,
-    ROUND(ROUND(CAST((ib.boxes_installed_in_month - LAG(ib.boxes_installed_in_month, 1) OVER (ORDER BY t.time_)) AS NUMERIC), 3) * 100 / ib.boxes_installed_in_month::numeric, 2) AS percentage_installed_box_compare,
 	
 	LAG(t.number_of_outlet, 1) OVER (ORDER BY t.time_) AS outlet_prev,
     t.number_of_outlet - LAG(t.number_of_outlet, 1) OVER (ORDER BY t.time_) AS outlet_compare,
@@ -100,11 +99,9 @@ SELECT
     
 	LAG(t.number_of_promotion, 1) OVER (ORDER BY t.time_) AS nb_discount_prev,
     t.number_of_promotion - LAG(t.number_of_promotion, 1) OVER (ORDER BY t.time_) AS nb_discount_compare,
-    ROUND(ROUND(CAST((t.number_of_promotion - LAG(t.number_of_promotion, 1) OVER (ORDER BY t.time_)) AS NUMERIC), 3) * 100 / t.number_of_promotion, 2) AS percentage_nb_discount_compare,
     
 	LAG(t.total_promotion, 1) OVER (ORDER BY t.time_) AS discount_prev,
     t.total_promotion - LAG(t.total_promotion, 1) OVER (ORDER BY t.time_) AS discount_compare,
-    ROUND(ROUND(CAST((t.total_promotion - LAG(t.total_promotion, 1) OVER (ORDER BY t.time_)) AS NUMERIC), 3) * 100 / t.total_promotion::numeric, 2) AS percentage_discount_compare,
     
 	LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.time_) AS cost_prev,
     t.total_cost_vnd - LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.time_) AS cost_compare,
@@ -157,10 +154,9 @@ SELECT
         ELSE NULL END AS diff_cost
     
 FROM trend_of_month_analysis t
-JOIN installed_box_per_month ib ON t.time_ = ib.month_year
+LEFT JOIN installed_box_per_month ib ON ib.month_year = t.time_
 ORDER BY t.time_;
 
--- Adding primary key constraint
 ALTER TABLE public.trend_of_month_analysis
 ADD CONSTRAINT trend_of_month_analysis_pk PRIMARY KEY (time_current);
 

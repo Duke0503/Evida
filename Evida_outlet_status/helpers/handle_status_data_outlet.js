@@ -25,10 +25,10 @@ const handle_status_data_outlet = async (
           ebox_status: Number(list_outlet[list_outlet.length - 1].split('-')[1]),  
           outlet_status: Number(outlet_status),
           system_status: 0,
-          current_system: 0,
-          current_device: 0,
-          voltage_system: 0,
-          voltage_device: 0,
+          outlet_current: 0,
+          current_external_meter: 0,
+          outlet_voltage: 0,
+          voltage_external_meter: 0,
           power_factor: 0,
           power_consumption: 0,
         };
@@ -44,10 +44,10 @@ const handle_status_data_outlet = async (
         if (outlet.rowCount != 0) {
           list_ebox_outlet[ebox_outlet_id].outlet_status = outlet.outlet_status;
           list_ebox_outlet[ebox_outlet_id].system_status = outlet.system_status;
-          list_ebox_outlet[ebox_outlet_id].current_system = outlet.current_system;
-          list_ebox_outlet[ebox_outlet_id].current_device = outlet.current_device;
-          list_ebox_outlet[ebox_outlet_id].voltage_system = outlet.voltage_system;
-          list_ebox_outlet[ebox_outlet_id].voltage_device = outlet.voltage_device;
+          list_ebox_outlet[ebox_outlet_id].outlet_current = outlet.outlet_current;
+          list_ebox_outlet[ebox_outlet_id].current_external_meter = outlet.current_external_meter;
+          list_ebox_outlet[ebox_outlet_id].outlet_voltage = outlet.outlet_voltage;
+          list_ebox_outlet[ebox_outlet_id].voltage_external_meter = outlet.voltage_external_meter;
           list_ebox_outlet[ebox_outlet_id].power_factor = outlet.power_factor;
           list_ebox_outlet[ebox_outlet_id].power_consumption = outlet.power_consumption;
         }

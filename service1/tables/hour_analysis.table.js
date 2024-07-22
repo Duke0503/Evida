@@ -4,6 +4,48 @@ const hour_analysis = async () => {
   try {
     await client.query(`
 
+DROP TABLE IF EXISTS public.hours_transaction;
+
+CREATE TABLE public.hours_transaction AS
+SELECT
+    id,
+    invoice_id,
+    start_date + start_time AS merged_start_time,
+    end_date + end_time AS merged_end_time,
+	EXTRACT(EPOCH FROM (end_date + end_time) - (start_date + start_time)) AS time_charging,
+    user_id,
+    box_id,
+    outlet_id,
+    wattage_consumed,
+    total_fee,
+    status,
+    discount_amount,
+    promotion_code,
+    promotion_discount,
+    activation_fee,
+    paid,
+    total_consumed_fee,
+    reason_closed,
+    created_at,
+    updated_at
+FROM public.transactions
+WHERE
+    (wattage_consumed > 0.005
+    OR wattage_consumed > 0.001 AND total_consumed_fee > 0)
+    AND CAST(SUBSTRING(box_id FROM '[0-9]+') AS INTEGER) >= 10;
+
+ALTER TABLE public.hours_transaction
+    ADD CONSTRAINT merge_time_hour_trans_pkey PRIMARY KEY (id, invoice_id),
+    ALTER COLUMN invoice_id SET NOT NULL,
+    ALTER COLUMN merged_start_time SET DATA TYPE timestamp without time zone,
+    ALTER COLUMN merged_end_time SET DATA TYPE timestamp without time zone,
+    ALTER COLUMN box_id SET DATA TYPE text COLLATE pg_catalog."default",
+    ALTER COLUMN outlet_id SET DATA TYPE text COLLATE pg_catalog."default",
+    ALTER COLUMN reason_closed SET DATA TYPE text COLLATE pg_catalog."default";
+
+CREATE INDEX hour_merged_start_time_idx ON hours_transaction(merged_start_time);
+
+
 DROP TABLE IF EXISTS public.hour_analysis;
 
 CREATE TABLE IF NOT EXISTS public.hour_analysis
@@ -14,7 +56,7 @@ CREATE TABLE IF NOT EXISTS public.hour_analysis
     box_charging_largest integer,
     box_id text
 );
-      
+
 DO $$
 DECLARE 
     max_time TIMESTAMP;
@@ -30,7 +72,7 @@ BEGIN
             Trans.time_charging,
             TB.id,
             TB.time_
-        FROM public.valid_transaction Trans, public.table_time TB
+        FROM public.hours_transaction Trans, public.table_time TB
         WHERE    Trans.time_charging < 86400 AND TB.time_ BETWEEN Trans.merged_start_time AND COALESCE(Trans.merged_end_time, max_time)
         AND CAST(SUBSTRING(box_id FROM '[0-9]+') AS INTEGER) >= 10
     ),
