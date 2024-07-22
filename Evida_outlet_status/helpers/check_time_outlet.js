@@ -4,7 +4,7 @@ const { save_data_to_database } = require('./save_data_to_database');
 
 const check_time_outlet = async (list_ebox_outlet) => {
   const more_than_15_min = new Date(new Date().getTime() - 15 * 60 * 1000);
-  const more_than_60_min = new Date(new Date().getTime() - 60 * 60 * 1000);
+  const more_than_1_day = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
 
   try {
     const outlet_with_status_2 = await client.query(
@@ -14,7 +14,7 @@ const check_time_outlet = async (list_ebox_outlet) => {
 
     const outlet_with_status_differ_2 = await client.query(
       'SELECT name FROM outlet_status WHERE outlet_status <> $1 AND update_time <= $2',
-      [2, more_than_60_min]
+      [2, more_than_1_day]
     );
 
     const outlet = [...outlet_with_status_2.rows, ...outlet_with_status_differ_2.rows];
