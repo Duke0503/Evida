@@ -4,7 +4,7 @@ const trend_of_quarter_analysis = async () => {
   try {
     await client.query(`
 
-DROP TABLE public.trend_of_quarter_analysis;
+DROP TABLE IF EXISTS public.trend_of_quarter_analysis;
 
 CREATE TABLE public.trend_of_quarter_analysis AS
 WITH trend_of_quarter_analysis AS (
