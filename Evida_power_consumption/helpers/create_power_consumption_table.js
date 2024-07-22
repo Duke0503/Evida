@@ -20,7 +20,7 @@ const create_power_consumption_table = async () => {
         ebox_status text COLLATE pg_catalog."default",
         power_consumption real,
         pme_value real,
-        "timestamp" timestamp without time zone,
+        "timestamp" timestamp with time zone,
         created_at timestamp with time zone,
         updated_at timestamp with time zone,
         CONSTRAINT power_consumption_pkey PRIMARY KEY (id)
