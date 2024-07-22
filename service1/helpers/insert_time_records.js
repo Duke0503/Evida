@@ -63,10 +63,28 @@ async function insert_time_records() {
 
     const current_time = new Date();
 
+    const create_index_query = `
+      DO $$
+      BEGIN
+          -- Check if the index already exists before creating it
+          IF NOT EXISTS (
+              SELECT 1 
+              FROM pg_indexes 
+              WHERE tablename = 'table_time' 
+              AND indexname = 'idx_table_time_time_'
+          ) THEN
+              CREATE INDEX idx_table_time_time_ ON table_time (time_);
+          END IF;
+      END $$;
+    `;
+
     // If maxTime is equal to minStartTime, insert minStartTime into table_time
     if (max_time.getTime() === min_start_time.getTime()) {
       const insert_min_time_query = 'INSERT INTO table_time (time_) VALUES ($1);';
+      await client.query('BEGIN');
       await client.query(insert_min_time_query, [min_start_time]);
+      await client.query(create_index_query);
+      await client.query('COMMIT');
       max_time = new Date(min_start_time); // Set maxTime to minStartTime to start the loop
     }
 
@@ -78,7 +96,10 @@ async function insert_time_records() {
       }
       // Insert into table_time
       const insert_query = 'INSERT INTO table_time (time_) VALUES ($1);';
+      await client.query('BEGIN');
       await client.query(insert_query, [max_time]);
+      await client.query(create_index_query);
+      await client.query('COMMIT');
     }
   } catch (err) {
     console.error('Error inserting or querying:', err);
