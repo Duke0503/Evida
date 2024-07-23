@@ -31,35 +31,11 @@ WITH trend_of_month_analysis AS (
         FROM public.valid_transaction
     )
     GROUP BY year_, month_, time_
-),
-installed_box_per_month AS (
-    WITH monthly_boxes AS (
-        SELECT 
-            DATE_TRUNC('month', created_at) + INTERVAL '1 month - 1 day' AS month_year,
-            COUNT(*) AS boxes_installed_in_month
-        FROM public.boxes
-        WHERE CAST(SUBSTRING(box_id FROM '[0-9]+') AS INTEGER) >= 10
-			AND box_id != box_name
-        GROUP BY DATE_TRUNC('month', created_at)
-    ),
-    cumulative_boxes AS (
-        SELECT 
-            month_year,
-            boxes_installed_in_month,
-            SUM(boxes_installed_in_month) OVER (ORDER BY month_year ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS boxes_installed_before_month
-        FROM monthly_boxes
-    )
-    SELECT 
-        month_year,
-        boxes_installed_in_month
-    FROM cumulative_boxes
-    ORDER BY month_year
 )
 SELECT
     t.time_::DATE AS time_current,
     t.total_user_on_month AS total_active_user,
     t.number_box_active,
-	COALESCE(ib.boxes_installed_in_month, 0) AS boxes_installed_in_month,
     t.number_of_outlet,
     t.total_transaction,
     t.total_power,
@@ -78,9 +54,6 @@ SELECT
     t.number_box_active - LAG(t.number_box_active, 1) OVER (ORDER BY t.time_) AS box_compare,
     ROUND(ROUND(CAST((t.number_box_active - LAG(t.number_box_active, 1) OVER (ORDER BY t.time_)) AS NUMERIC), 3) * 100 / t.number_box_active, 2) AS percentage_box_compare,
     
-	LAG(ib.boxes_installed_in_month, 1) OVER (ORDER BY t.time_) AS installed_box_prev_month,
-    ib.boxes_installed_in_month - LAG(ib.boxes_installed_in_month, 1) OVER (ORDER BY t.time_) AS installed_box_compare,
-	
 	LAG(t.number_of_outlet, 1) OVER (ORDER BY t.time_) AS outlet_prev,
     t.number_of_outlet - LAG(t.number_of_outlet, 1) OVER (ORDER BY t.time_) AS outlet_compare,
     ROUND(ROUND(CAST((t.number_of_outlet - LAG(t.number_of_outlet, 1) OVER (ORDER BY t.time_)) AS NUMERIC), 3) * 100 / t.number_of_outlet, 2) AS percentage_outlet_compare,
@@ -154,9 +127,9 @@ SELECT
         ELSE NULL END AS diff_cost
     
 FROM trend_of_month_analysis t
-LEFT JOIN installed_box_per_month ib ON ib.month_year = t.time_
 ORDER BY t.time_;
 
+-- Adding primary key constraint
 ALTER TABLE public.trend_of_month_analysis
 ADD CONSTRAINT trend_of_month_analysis_pk PRIMARY KEY (time_current);
 

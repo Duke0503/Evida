@@ -4,7 +4,7 @@ const trend_of_quarter_analysis = async () => {
   try {
     await client.query(`
 
-DROP TABLE IF EXISTS public.trend_of_quarter_analysis;
+DROP TABLE public.trend_of_quarter_analysis;
 
 CREATE TABLE public.trend_of_quarter_analysis AS
 WITH trend_of_quarter_analysis AS (
@@ -31,29 +31,6 @@ WITH trend_of_quarter_analysis AS (
         FROM public.valid_transaction
     )
     GROUP BY year_, quarter_, time_
-),
-installed_box_per_quarter AS (
-    WITH quarterly_boxes AS (
-        SELECT 
-            DATE_TRUNC('quarter', created_at) + INTERVAL '3 month - 1 day' AS quarter_year,
-            COUNT(*) AS boxes_installed_in_quarter
-        FROM public.boxes
-        WHERE CAST(SUBSTRING(box_id FROM '[0-9]+') AS INTEGER) >= 10
-            AND box_id != box_name
-        GROUP BY DATE_TRUNC('quarter', created_at)
-    ),
-    cumulative_boxes AS (
-        SELECT 
-            quarter_year,
-            boxes_installed_in_quarter,
-            SUM(boxes_installed_in_quarter) OVER (ORDER BY quarter_year ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS boxes_installed_before_quarter
-        FROM quarterly_boxes
-    )
-    SELECT 
-        quarter_year,
-        boxes_installed_in_quarter
-    FROM cumulative_boxes
-    ORDER BY quarter_year
 )
 SELECT
     t.year_,
@@ -61,7 +38,6 @@ SELECT
     t.time_::DATE AS time_current,
     t.total_user_on_quarter AS total_active_user,
     t.number_box_active,
-    ib.boxes_installed_in_quarter,
     t.number_of_outlet,
     t.total_transaction,
     t.total_power,
@@ -79,10 +55,6 @@ SELECT
     LAG(t.number_box_active, 1) OVER (ORDER BY t.year_, t.quarter_) AS box_prev_quarter,
     t.number_box_active - LAG(t.number_box_active, 1) OVER (ORDER BY t.year_, t.quarter_) AS box_compare,
     ROUND(ROUND(CAST((t.number_box_active - LAG(t.number_box_active, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / t.number_box_active, 2) AS percentage_box_compare,
-    
-    LAG(ib.boxes_installed_in_quarter, 1) OVER (ORDER BY t.year_, t.quarter_) AS installed_box_prev_quarter,
-    ib.boxes_installed_in_quarter - LAG(ib.boxes_installed_in_quarter, 1) OVER (ORDER BY t.year_, t.quarter_) AS installed_box_compare,
-    ROUND(ROUND(CAST((ib.boxes_installed_in_quarter - LAG(ib.boxes_installed_in_quarter, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / ib.boxes_installed_in_quarter::numeric, 2) AS percentage_installed_box_compare,
     
     LAG(t.number_of_outlet, 1) OVER (ORDER BY t.year_, t.quarter_) AS outlet_prev,
     t.number_of_outlet - LAG(t.number_of_outlet, 1) OVER (ORDER BY t.year_, t.quarter_) AS outlet_compare,
@@ -159,7 +131,6 @@ SELECT
         ELSE NULL END AS diff_cost
     
 FROM trend_of_quarter_analysis t
-LEFT JOIN installed_box_per_quarter ib ON t.time_ = ib.quarter_year
 ORDER BY t.year_, t.quarter_;
 
 -- Adding primary key constraint

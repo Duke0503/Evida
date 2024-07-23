@@ -88,9 +88,9 @@ async function insert_time_records() {
       max_time = new Date(min_start_time); // Set maxTime to minStartTime to start the loop
     }
 
-    // Loop to insert records with 15-minute intervals until exceeding current time
+    // Loop to insert records with 1-hour intervals until exceeding current time
     while (max_time <= current_time) {
-      max_time.setMinutes(max_time.getMinutes() + 15); // Add 15 minutes
+      max_time.setMinutes(max_time.getMinutes() + 60); // Add 1 hour
       if (max_time > current_time) {
         break; // Exit loop if maxTime exceeds currentTime
       }
