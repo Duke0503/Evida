@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS public.hour_analysis
     time_ timestamp without time zone,
     active_user integer,
     box_charging_largest integer,
-    box_id text
+    box_id text,
+    box_name text
 );
 
 DO $$
@@ -62,8 +63,10 @@ DECLARE
     max_time TIMESTAMP;
 BEGIN
 
+    -- Get the maximum time from the table_time
     SELECT MAX(time_) INTO max_time FROM public.table_time;
 
+    -- Common Table Expressions (CTEs)
     WITH status_charging AS (
         SELECT 
             Trans.box_id,
@@ -72,14 +75,16 @@ BEGIN
             Trans.time_charging,
             TB.id,
             TB.time_
-        FROM public.hours_transaction Trans, public.table_time TB
-        WHERE    Trans.time_charging < 86400 AND TB.time_ BETWEEN Trans.merged_start_time AND COALESCE(Trans.merged_end_time, max_time)
-        AND CAST(SUBSTRING(box_id FROM '[0-9]+') AS INTEGER) >= 10
+        FROM public.hours_transaction Trans
+        JOIN public.table_time TB
+            ON Trans.time_charging < 86400 
+            AND TB.time_ BETWEEN Trans.merged_start_time AND COALESCE(Trans.merged_end_time, max_time)
+        WHERE CAST(SUBSTRING(Trans.box_id FROM '[0-9]+') AS INTEGER) >= 10
     ),
     box_analyst AS (
         SELECT 
             SG.box_id,
-            SG.time_,
+            SG.time_,    
             COUNT(SG.id) AS charging_count
         FROM status_charging SG
         GROUP BY SG.box_id, SG.time_
@@ -94,7 +99,9 @@ BEGIN
     ),
     cte AS (
         SELECT 
-            AH.*,
+            AH.time_,
+            AH.active_user,
+            AH.box_charging_largest,
             BA.box_id,
             ROW_NUMBER() OVER (PARTITION BY AH.time_, AH.box_charging_largest ORDER BY random()) AS rn
         FROM analyst_tmp AS AH
@@ -103,13 +110,17 @@ BEGIN
             AND AH.box_charging_largest = BA.charging_count
     )
 
-    INSERT INTO public.hour_analysis (time_, active_user, box_charging_largest, box_id)
+    -- Insert into the hour_analysis table
+    INSERT INTO public.hour_analysis (time_, active_user, box_charging_largest, box_id, box_name)
     SELECT 
         CTE.time_,
         CTE.active_user,
         CTE.box_charging_largest,
-        CTE.box_id
+        CTE.box_id,
+        B.box_name
     FROM cte
+    LEFT JOIN public.boxes B
+        ON CTE.box_id = B.box_id
     WHERE rn = 1
     ORDER BY CTE.time_ DESC;
 
