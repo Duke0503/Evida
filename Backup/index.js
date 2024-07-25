@@ -32,7 +32,7 @@ const performAllTransfers = async () => {
 };
 
 // Schedule the data transfer process to run at 12 AM every day 
-cron.schedule('*/25 * * * * *', () => {
+cron.schedule('0 0 * * *', () => {
     console.log('Running data transfer process at 12 AM every day...');
     performAllTransfers();
 });
