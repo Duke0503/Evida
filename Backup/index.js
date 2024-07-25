@@ -1,61 +1,38 @@
+require('dotenv').config();
 const cron = require('node-cron');
+const { createOutletDataTable } = require('./helpers/create_outlet_data_table');
+const { createPowerConsumptionTable } = require('./helpers/create_power_consumption_table');
 const { Client } = require('pg');
-const getLastUpdateTime = require('./helpers/getLastUpdateTime'); 
-const { dbConfig, db2Config } = require('./config/database');
+const { db2Config } = require('./config/database');
+const transferData = require('./helpers/transferData'); 
 
-const transferAppUserData = require('./helpers/transferAppUserData'); 
-const transferBoxesData = require('./helpers/transferBoxesData'); 
-const transferOtherData = require('./helpers/transferOtherData'); 
+const tables = ['outlet_data', 'power_consumption'];
 
-const appUserTables = ['app_user'];
-const appBoxesTables = ['boxes'];
-const otherTables = ['outlet_data', 'power_consumption', 'transactions'];
-
-async function runAppUserTransferData(clientDB2) {
-    try {
-        for (const table of appUserTables) {
-            // Pass getLastUpdateTime function to transferData
-            await transferAppUserData(table, (tableName) => getLastUpdateTime(tableName, clientDB2));
-        }
-    } catch (err) {
-        console.error(`Error transferring data for ${table}:`, err);
+const executeDataTransfer = async () => {
+    for (const table of tables) {
+        await transferData(table);
     }
-}
-async function runBoxesTransferData(clientDB2) {
-    try {
-        for (const table of appBoxesTables) {
-            // Pass getLastUpdateTime function to transferData
-            await transferBoxesData(table, (tableName) => getLastUpdateTime(tableName, clientDB2));
-        }
-    } catch (err) {
-        console.error(`Error transferring data for ${table}:`, err);
-    }
-}
+};
 
-async function runOtherTransferData() {
-    for (const table of otherTables) {
-        await transferOtherData(table);
-    }
-}
-
-async function runAllTransfers() {
+const performAllTransfers = async () => {
     const clientDB2 = new Client(db2Config);
     try {
         await clientDB2.connect();
+        
+        // Ensure tables exist
+        await createOutletDataTable();
+        await createPowerConsumptionTable();
 
-        await runAppUserTransferData(clientDB2);
-         await runBoxesTransferData(clientDB2);
-        await runOtherTransferData();
+        await executeDataTransfer();
     } catch (err) {
         console.error('Error during data transfer:', err);
     } finally {
         await clientDB2.end();
     }
-}
+};
 
 // Schedule the data transfer process to run at 12 AM every day 
 cron.schedule('*/25 * * * * *', () => {
-    console.log('-                                                  -');
     console.log('Running data transfer process at 12 AM every day...');
-    runAllTransfers();
+    performAllTransfers();
 });
