@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { get_headers } = require('./login_transaction');
 
-const user_charging = async (ebox_id, outlet_id) => {
+const user_charging = async (box_id, outlet_number) => {
   try {
     // const headers = await login_transaction();
     const headers = await get_headers();
@@ -16,7 +16,7 @@ const user_charging = async (ebox_id, outlet_id) => {
       await axios.get(`${process.env.API_TRANSACTIONS}${number_page}`, { headers: headers })
         .then(response => {
           response.data['hydra:member'].forEach(async transaction => {
-            if (transaction.outlet.uniqueId == `${ebox_id}_${outlet_id}`) {
+            if (transaction.outlet.uniqueId == `${box_id}_${outlet_number}`) {
               user = {
                 id: transaction.user.id,
                 name: transaction.user.name

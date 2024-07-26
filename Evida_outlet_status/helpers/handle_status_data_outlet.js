@@ -3,64 +3,106 @@ const { find_outlet_status_by_name, insert_outlet_status, update_status_outlet }
 const { find_outlet_by_name } = require('./outlets_sql');
 
 const handle_status_data_outlet = async (
-  ebox_id,
-  data_ebox,
-  list_ebox_outlet,
-  ebox_data,
+  box_id,
+  content_mqtt,
+  list_box_outlet,
+  list_box_data,
 ) => {
-  const list_outlet = data_ebox.toString().split(',');
+  const list_outlet = content_mqtt.toString().split(',');
 
-  for (let count = 0; count < list_outlet.length - 1; count++) {
-    const outlet_id = list_outlet[count].split('-')[0];
-    const outlet_status = list_outlet[count].split('-')[1];
+  list_outlet.slice(0, -1).forEach(async outlet_data => {
+    const [outlet_number, outlet_status] = outlet_data.split('-');
 
-    if (Number(outlet_status) != 6) {
-      const ebox_outlet_id = 'Ebox_' + ebox_id + '_' + outlet_id;
-      
-      if (!list_ebox_outlet[ebox_outlet_id]) {
-        list_ebox_outlet[ebox_outlet_id] = {
-          outlet_id : Number(outlet_id),
-          ebox_id : 'Ebox_' + ebox_id,
-          ebox_name: ebox_data['Ebox_' + ebox_id].ebox_name,
-          ebox_status: Number(list_outlet[list_outlet.length - 1].split('-')[1]),  
-          outlet_status: Number(outlet_status),
-          system_status: 0,
-          outlet_current: 0,
-          current_external_meter: 0,
-          outlet_voltage: 0,
-          voltage_external_meter: 0,
-          power_factor: 0,
-          power_consumption: 0,
-        };
-        
-        const outlet_status_data = await find_outlet_status_by_name(ebox_outlet_id);
+    if (check_valid_outlet(outlet_status)) {
 
-        const outlet = await find_outlet_by_name(ebox_outlet_id);
-        
-        if (outlet_status_data.rowCount == 0) {
-          await insert_outlet_status(ebox_outlet_id, outlet_status);
-        } 
+      await create_or_update_box_outlet(
+        box_id,
+        outlet_number,
+        list_box_outlet,
+        list_box_data,
+        outlet_status
+      );
 
-        if (outlet.rowCount != 0) {
-          list_ebox_outlet[ebox_outlet_id].outlet_status = outlet.outlet_status;
-          list_ebox_outlet[ebox_outlet_id].system_status = outlet.system_status;
-          list_ebox_outlet[ebox_outlet_id].outlet_current = outlet.outlet_current;
-          list_ebox_outlet[ebox_outlet_id].current_external_meter = outlet.current_external_meter;
-          list_ebox_outlet[ebox_outlet_id].outlet_voltage = outlet.outlet_voltage;
-          list_ebox_outlet[ebox_outlet_id].voltage_external_meter = outlet.voltage_external_meter;
-          list_ebox_outlet[ebox_outlet_id].power_factor = outlet.power_factor;
-          list_ebox_outlet[ebox_outlet_id].power_consumption = outlet.power_consumption;
-        }
-      };
-      
-      if (list_ebox_outlet[ebox_outlet_id].outlet_status != Number(outlet_status)) {
-        await update_status_outlet(ebox_outlet_id, outlet_status);
+      const outlet_id = 'Ebox_' + box_id + '_' + outlet_number;
 
-        list_ebox_outlet[ebox_outlet_id].outlet_status = Number(outlet_status);
+      list_box_outlet[outlet_id].box_connection = get_box_connection(list_outlet);
 
-        save_data_to_database(list_ebox_outlet[ebox_outlet_id]);
-      };
+      check_status_change(
+        list_box_outlet,
+        outlet_id,
+        outlet_status
+      );
     };
+  });
+};
+
+
+const check_valid_outlet = (outlet_status) => {
+  if (Number(outlet_status) != 6) 
+    return true;
+  return false
+};
+
+const create_or_update_box_outlet = async (
+  box_id,
+  outlet_number,
+  list_box_outlet,
+  list_box_data,
+  outlet_status
+) => {
+  const outlet_id = 'Ebox_' + box_id + '_' + outlet_number;
+
+  if (!list_box_outlet[outlet_id]) {
+    list_box_outlet[outlet_id] = {
+      outlet_number : Number(outlet_number),
+      box_id : 'Ebox_' + box_id,
+      location_name: list_box_data['Ebox_' + box_id].location_name,
+      box_connection: 0,  
+      outlet_status: Number(outlet_status),
+      command: 0,
+      outlet_current: 0,
+      external_meter_current: 0,
+      outlet_voltage: 0,
+      external_meter_voltage: 0,
+      outlet_power_factor: 0,
+      outlet_power_consumption: 0,
+    };
+    const outlet_status_data = await find_outlet_status_by_name(outlet_id);
+    if (outlet_status_data.rowCount == 0) {
+      await insert_outlet_status(outlet_id, outlet_status);
+    }
+
+    const outlet = await find_outlet_by_name(outlet_id);
+
+    if (outlet.rowCount != 0) {
+      list_box_outlet[outlet_id].outlet_status = outlet.rows[0].outlet_status;
+      list_box_outlet[outlet_id].command = outlet.rows[0].command;
+      list_box_outlet[outlet_id].outlet_current = outlet.rows[0].outlet_current;
+      list_box_outlet[outlet_id].external_meter_current = outlet.rows[0].external_meter_current;
+      list_box_outlet[outlet_id].outlet_voltage = outlet.rows[0].outlet_voltage;
+      list_box_outlet[outlet_id].external_meter_voltage = outlet.rows[0].external_meter_voltage;
+      list_box_outlet[outlet_id].outlet_power_factor = outlet.rows[0].outlet_power_factor;
+      list_box_outlet[outlet_id].outlet_power_consumption = outlet.rows[0].outlet_power_consumption;
+    };
+  };
+
+};
+
+const get_box_connection = (list_outlet) => {
+  return Number(list_outlet[list_outlet.length - 1].split('-')[1]);
+}
+
+const check_status_change = async (
+  list_box_outlet,
+  outlet_id,
+  outlet_status
+) => {
+  if (list_box_outlet[outlet_id].outlet_status != Number(outlet_status)) {
+    await update_status_outlet(outlet_id, outlet_status);
+
+    list_box_outlet[outlet_id].outlet_status = Number(outlet_status);
+
+    save_data_to_database(list_box_outlet[outlet_id]);
   };
 };
 

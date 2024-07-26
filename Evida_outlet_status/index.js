@@ -4,7 +4,7 @@ const mqtt_connection = require('./config/mqtt');
 const cron = require('node-cron');
 const client = require('./config/database');
 
-const { fetch_ebox_id } = require('./helpers/fetch_ebox_id');
+const { fetch_box_id } = require('./helpers/fetch_box_id')
 const { handle_message_mqtt } = require('./helpers/handle_message_mqtt');
 const { check_time_outlet } = require('./helpers/check_time_outlet');
 const { check_network_connection } = require('./helpers/check_network_connection');
@@ -31,7 +31,7 @@ const initialize = async () => {
     client.end();
   });
 
-  let ebox_data = [];
+  let list_box_data = [];
 
   const SE_topic_mqtt = 'SEbox_';
   const AE_topic_mqtt = 'AEbox_';
@@ -42,31 +42,28 @@ const initialize = async () => {
   const CE_topic_mqtt = 'CEbox_';
 
   let topics_mqtt = [];
-  let list_ebox_outlet = [];
+  let list_box_outlet = [];
 
   client_connect_mqtt.on('connect', async() => {
     try {
-      const list_ebox_id = await fetch_ebox_id(ebox_data);
+      const list_box_id = await fetch_box_id(list_box_data);
       
-      list_ebox_id.forEach(ebox => {
-        const ebox_id = ebox.split('_')[1];
-        topics_mqtt.push(SE_topic_mqtt + ebox_id); 
-        topics_mqtt.push(AE_topic_mqtt + ebox_id); 
-        topics_mqtt.push(PE_topic_mqtt + ebox_id);
-        topics_mqtt.push(PFE_topic_mqtt + ebox_id); 
-        topics_mqtt.push(VE_topic_mqtt + ebox_id); 
-        topics_mqtt.push(PME_topic_mqtt + ebox_id);
-        topics_mqtt.push(CE_topic_mqtt + ebox_id);
+      list_box_id.forEach(box => {
+        const box_id = box.split('_')[1];
+        topics_mqtt.push(SE_topic_mqtt + box_id); 
+        topics_mqtt.push(AE_topic_mqtt + box_id); 
+        topics_mqtt.push(PE_topic_mqtt + box_id);
+        topics_mqtt.push(PFE_topic_mqtt + box_id); 
+        topics_mqtt.push(VE_topic_mqtt + box_id); 
+        topics_mqtt.push(PME_topic_mqtt + box_id);
+        topics_mqtt.push(CE_topic_mqtt + box_id);
       });
 
       topics_mqtt.forEach(topic_mqtt => {
         client_connect_mqtt.subscribe(topic_mqtt, err => {
           if (err) {
             console.error(`Failed to subscribe to topic ${topic_mqtt}:`, err);
-          } 
-          // else {
-          //   console.log(`Subscribed to topic ${topic_mqtt}`);
-          // };
+          };
         });
       });
     } catch (error) {
@@ -74,17 +71,17 @@ const initialize = async () => {
     };
   });
 
-  client_connect_mqtt.on('message', (topic_mqtt, data_ebox) => {
+  client_connect_mqtt.on('message', (topic_mqtt, content_mqtt) => {
     handle_message_mqtt(
       topic_mqtt,
-      data_ebox,
-      list_ebox_outlet,
-      ebox_data,
+      content_mqtt,
+      list_box_outlet,
+      list_box_data,
     );
   });
 
   cron.schedule('* * * * *', async () => {
-    check_time_outlet(list_ebox_outlet, ebox_data);
+    check_time_outlet(list_box_outlet, list_box_data);
   });
 };
 

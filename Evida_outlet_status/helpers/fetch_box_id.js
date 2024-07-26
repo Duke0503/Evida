@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const fetch_ebox_id = async (ebox_data) => {
+const fetch_box_id = async (list_box_data) => {
   return new Promise(async (resolve, reject) => {
     const login_user = {
       username: process.env.USERNAME_API,
@@ -15,18 +15,18 @@ const fetch_ebox_id = async (ebox_data) => {
         }
         await axios.get(process.env.API_EBOXES, { headers: headers })
           .then(response_boxes => {
-            const Ebox_ids = response_boxes.data['hydra:member']
+            const list_box_id = response_boxes.data['hydra:member']
               .filter(element => element.status === true)
               .map(element => element.uniqueId);
-
+            
             response_boxes.data['hydra:member'].forEach(element => {
-              if (element.status === true && !ebox_data[element.uniqueId]) {
-                ebox_data[element.uniqueId] = {
-                  ebox_name: element.name,
+              if (element.status === true && !list_box_data[element.uniqueId]) {
+                list_box_data[element.uniqueId] = {
+                  location_name: element.name,
                 };
               };
             });
-            resolve(Ebox_ids);
+            resolve(list_box_id);
           })
           .catch(error => {
             reject(error);
@@ -39,4 +39,4 @@ const fetch_ebox_id = async (ebox_data) => {
   });
 };
 
-module.exports = { fetch_ebox_id };
+module.exports = { fetch_box_id };

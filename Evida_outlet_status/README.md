@@ -28,14 +28,14 @@ $ npm start
 1. **id**
    - **Description**: The identifier of record in database.
 
-2. **ebox_id**
+2. **box_id**
    - **Description**: The identifier of the electrical box.
 
 3. **box_status**
    - **Description**: The overall status of the electrical box. The possible values are:
      - online
      - offline
-4. **outlet_id**
+4. **outlet_number**
   - **Description**: The identifier of a specific outlet.
 
 5. **outlet_status**
@@ -57,9 +57,9 @@ $ npm start
 8. **voltage**
    - **Description**: Electrical voltage supplied by the ebox, in volt (V).
    
-9. **power_factor**
+9. **outlet_power_factor**
    - **Description**: Electrical power is being converted and utilized by the electronic outlet when the status is 2 (%).
 
-9. **power_consumption**
+9. **outlet_outlet_outloutlet_power_consumptionumption**
    - **Description**: The power consumption measurement of the electrical outlet when the status is 2, in kilowatts (kW).
 

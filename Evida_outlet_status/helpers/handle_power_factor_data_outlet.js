@@ -1,38 +1,47 @@
 const { save_data_to_database } = require('./save_data_to_database');
+const { check_status_outlet_charging} = require('./check_status_outlet_charging');
 
 const handle_power_factor_data_outlet = async (
-  ebox_id,
-  data_ebox,
-  list_ebox_outlet,
+  box_id,
+  content_mqtt,
+  list_box_outlet,
 ) => {
-  const list_outlet = data_ebox.toString().split(',');
-  for (let count = 0; count < list_outlet.length - 1; count++) {
-    const outlet_id = list_outlet[count].split('-')[0];
-    const outlet_power_factor = list_outlet[count].split('-')[1];
+  const list_outlet = content_mqtt.toString().split(',');
 
-    const ebox_outlet_id = 'Ebox_' + ebox_id + '_' + outlet_id;
-    
-    if (list_ebox_outlet[ebox_outlet_id]) {
-      if (list_ebox_outlet[ebox_outlet_id].outlet_status == 2) {
-        if (list_ebox_outlet[ebox_outlet_id].power_factor == 0) {
-          list_ebox_outlet[ebox_outlet_id].power_factor = Number(outlet_power_factor);
+  list_outlet.slice(0, -1).forEach(async outlet_data => {
+    const [outlet_number, outlet_power_factor] = outlet_data.split('-');
+
+    const outlet_id = 'Ebox_' + box_id + '_' + outlet_number;
+
+    if (list_box_outlet[outlet_id]) {
+
+      if (check_status_outlet_charging(list_box_outlet, outlet_id)) {
+
+        if (list_box_outlet[outlet_id].outlet_power_factor == 0) {
+          list_box_outlet[outlet_id].outlet_power_factor = Number(outlet_power_factor);
         } else {
-          if (Number(outlet_power_factor) - list_ebox_outlet[ebox_outlet_id].power_factor > 20
-            || Number(outlet_power_factor) - list_ebox_outlet[ebox_outlet_id].power_factor < -20) {
+          if (check_power_factor_condition_to_save_current(list_box_outlet, outlet_id, outlet_power_factor)) {
+            list_box_outlet[outlet_id].outlet_power_factor = Number(outlet_power_factor);
 
-            list_ebox_outlet[ebox_outlet_id].power_factor = Number(outlet_power_factor);
-
-            save_data_to_database(list_ebox_outlet[ebox_outlet_id]);
-
-          } else {
-            list_ebox_outlet[ebox_outlet_id].power_factor = Number(outlet_power_factor);
-          }
-        };
-      } else {
-        list_ebox_outlet[ebox_outlet_id].power_factor = Number(outlet_power_factor);
-      };
+            save_data_to_database(list_box_outlet[outlet_id]);
+          } else list_box_outlet[outlet_id].outlet_power_factor = Number(outlet_power_factor);
+        }
+      } else list_box_outlet[outlet_id].outlet_power_factor = Number(outlet_power_factor);
     };
-  };
+  });
+
+};
+
+
+const check_power_factor_condition_to_save_current = (
+  list_box_outlet,
+  outlet_id,
+  outlet_power_factor
+) => {
+  if (Number(outlet_power_factor) - list_box_outlet[outlet_id].outlet_power_factor > 20
+    || Number(outlet_power_factor) - list_box_outlet[outlet_id].outlet_power_factor < -20) 
+    return true;
+  return false;
 };
 
 module.exports = { handle_power_factor_data_outlet };

@@ -1,101 +1,99 @@
 const client = require('../config/database');
-const { find_outlet_by_outlet_id_and_outlet_id } = require('./find_outlet_by_outlet_id_and_outlet_id');
 const { user_charging } = require('./get_user_charging');
 const { update_outlet } = require('./outlet_status_sql');
 const { insert_outlet, find_outlet_by_name } = require('./outlets_sql');
 
 const insert_query = async (
-  ebox_id,
-  ebox_name,
+  box_id,
+  location_name,
   timestamp,
-  outlet_id,
-  box_status,
+  outlet_number,
+  box_connection,
   outlet_status,
-  system_status,
+  command,
   outlet_current,
-  current_external_meter,
+  external_meter_current,
   outlet_voltage,
-  voltage_external_meter,
-  power_factor,
-  power_consumption,
+  external_meter_voltage,
+  outlet_power_factor,
+  outlet_power_consumption,
 ) => {
-  // const outlet_data = await find_outlet_by_outlet_id_and_outlet_id(ebox_id, outlet_id);
-  const outlet_ = await find_outlet_by_name(`${ebox_id}_${outlet_id}`);
+  const outlet_ = await find_outlet_by_name(`${box_id}_${outlet_number}`);
 
   const outlet = outlet_.rows[0];
 
   if (!outlet) {
     await insert_query_statemnet(
-      ebox_id,
-      ebox_name,
+      box_id,
+      location_name,
       timestamp,
-      outlet_id,
-      box_status,
+      outlet_number,
+      box_connection,
       outlet_status,
-      system_status,
+      command,
       outlet_current,
-      current_external_meter,
+      external_meter_current,
       outlet_voltage,
-      voltage_external_meter,
-      power_factor,
-      power_consumption,
+      external_meter_voltage,
+      outlet_power_factor,
+      outlet_power_consumption,
     )
   } else {
     if (outlet.outlet_status != outlet_status) {
-      await insert_query_statemnet(
-        ebox_id,
-        ebox_name,
+       await insert_query_statemnet(
+        box_id,
+        location_name,
         timestamp,
-        outlet_id,
-        box_status,
+        outlet_number,
+        box_connection,
         outlet_status,
-        system_status,
+        command,
         outlet_current,
-        current_external_meter,
+        external_meter_current,
         outlet_voltage,
-        voltage_external_meter,
-        power_factor,
-        power_consumption,
+        external_meter_voltage,
+        outlet_power_factor,
+        outlet_power_consumption,
       )
     } else {
       if ( outlet_status == 2) {
         if (outlet_current - outlet.outlet_current > 1 || outlet_current - outlet.outlet_current < -1 ||
-          power_factor - outlet.power_factor > 20 || power_factor - outlet.power_factor < -20 ||
-          power_consumption - outlet.power_consumption > 1 || power_consumption - outlet.power_consumption < -1 ||
+          outlet_power_factor - outlet.outlet_power_factor > 20 || outlet_power_factor - outlet.outlet_power_factor < -20 ||
+          outlet_power_consumption - outlet.outlet_power_consumption > 1 || outlet_power_consumption - outlet.outlet_power_consumption < -1 ||
           is_greater_than_by_minutes(timestamp, outlet.timestamp, 15)
         ) {
           await insert_query_statemnet(
-            ebox_id,
-            ebox_name,
+            box_id,
+            location_name,
             timestamp,
-            outlet_id,
-            box_status,
+            outlet_number,
+            box_connection,
             outlet_status,
-            system_status,
+            command,
             outlet_current,
-            current_external_meter,
+            external_meter_current,
             outlet_voltage,
-            voltage_external_meter,
-            power_factor,
-            power_consumption,
+            external_meter_voltage,
+            outlet_power_factor,
+            outlet_power_consumption,
           )
         }
       } else {
-        if (is_greater_than_by_minutes(timestamp, outlet.timestamp, 60)) {
+        if (is_greater_than_by_minutes(timestamp, outlet.timestamp, 24 * 60)) {
           await insert_query_statemnet(
-            ebox_id,
-            ebox_name,
+            box_id,
+            location_name,
             timestamp,
-            outlet_id,
-            box_status,
+            outlet_number,
+            box_connection,
             outlet_status,
-            system_status,
+            command,
             outlet_current,
-            current_external_meter,
+            external_meter_current,
             outlet_voltage,
-            voltage_external_meter,
-            power_factor,
-            power_consumption,
+            external_meter_voltage,
+            outlet_power_factor,
+            outlet_power_consumption,
           )
         }
       }
@@ -105,86 +103,86 @@ const insert_query = async (
 
 
 const insert_query_statemnet = async (
-  ebox_id,
-  ebox_name,
+  box_id,
+  location_name,
   timestamp,
-  outlet_id,
-  box_status,
+  outlet_number,
+  box_connection,
   outlet_status,
-  system_status,
+  command,
   outlet_current,
-  current_external_meter,
+  external_meter_current,
   outlet_voltage,
-  voltage_external_meter,
-  power_factor,
-  power_consumption,
+  external_meter_voltage,
+  outlet_power_factor,
+  outlet_power_consumption,
 ) => {
   let user_id = null;
   let user_name = null
   if (outlet_status == 2) {
-    const user = await user_charging(ebox_id, outlet_id);
+    const user = await user_charging(box_id, outlet_number);
     if (user) {
       user_id = user.id;
       user_name = user.name;
     } 
   }
-  await update_outlet(`${ebox_id}_${outlet_id}`);
+  await update_outlet(`${box_id}_${outlet_number}`);
   await insert_outlet(
-    `${ebox_id}_${outlet_id}`,
-    ebox_id, 
-    ebox_name,
+    `${box_id}_${outlet_number}`,
+    box_id, 
+    location_name,
     timestamp,
     user_id,
     user_name,
-    outlet_id,
-    box_status,
+    outlet_number,
+    box_connection,
     outlet_status,
-    system_status,
+    command,
     outlet_current,
-    current_external_meter,
+    external_meter_current,
     outlet_voltage,
-    voltage_external_meter,
-    power_factor,
-    power_consumption,
+    external_meter_voltage,
+    outlet_power_factor,
+    outlet_power_consumption,
   );
   const insert_query = `
     INSERT INTO outlet_data (
-      ebox_id, 
-      ebox_name,
+      box_id, 
+      location_name,
       timestamp,
       user_id,
       user_name,
-      outlet_id,
-      box_status,
+      outlet_number,
+      box_connection,
       outlet_status,
-      system_status,
+      command,
       outlet_current,
-      current_external_meter,
+      external_meter_current,
       outlet_voltage,
-      voltage_external_meter,
-      power_factor,
-      power_consumption,
+      external_meter_voltage,
+      outlet_power_factor,
+      outlet_power_consumption,
       created_at,
       updated_at
     )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW(), NOW())
   `;
   const values = [
-    ebox_id,
-    ebox_name,
+    box_id,
+    location_name,
     timestamp,
     user_id,
     user_name,
-    outlet_id,
-    box_status,
+    outlet_number,
+    box_connection,
     outlet_status,
-    system_status,
+    command,
     outlet_current,
-    current_external_meter,
+    external_meter_current,
     outlet_voltage,
-    voltage_external_meter,
-    power_factor,
-    power_consumption,
+    external_meter_voltage,
+    outlet_power_factor,
+    outlet_power_consumption,
   ]; 
 
   try {

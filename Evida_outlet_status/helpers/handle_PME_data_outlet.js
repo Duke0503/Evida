@@ -1,17 +1,17 @@
 const handle_PME_data_outlet = (
-  ebox_id,
+  box_id,
   data_ebox,
   list_ebox_outlet,
 ) => {
   const PME_data = data_ebox.toString().split(',');
 
-  const voltage_external_meter = PME_data[0];
-  const current_external_meter = PME_data[1];
+  const external_meter_voltage = PME_data[0];
+  const external_meter_current = PME_data[1];
   
-  for (let outlet_id = 0; outlet_id < 10; outlet_id ++) {
-    if (list_ebox_outlet['Ebox_' + ebox_id + '_' + outlet_id.toString()]) {
-      list_ebox_outlet['Ebox_' + ebox_id + '_' + outlet_id.toString()].voltage_external_meter = Number(voltage_external_meter);
-      list_ebox_outlet['Ebox_' + ebox_id + '_' + outlet_id.toString()].current_external_meter = Number(current_external_meter);
+  for (let outlet_number = 0; outlet_number < 10; outlet_number ++) {
+    if (list_ebox_outlet['Ebox_' + box_id + '_' + outlet_number.toString()]) {
+      list_ebox_outlet['Ebox_' + box_id + '_' + outlet_number.toString()].external_meter_voltage = Number(external_meter_voltage);
+      list_ebox_outlet['Ebox_' + box_id + '_' + outlet_number.toString()].external_meter_current = Number(external_meter_current);
     };
   };
 };

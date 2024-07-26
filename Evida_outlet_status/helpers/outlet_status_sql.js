@@ -16,6 +16,10 @@ const insert_outlet_status = async (name, outlet_status) => {
   const insert_query = `
     INSERT INTO outlet_status (name, outlet_status, update_time)
     VALUES ($1, $2, $3)
+    ON CONFLICT (name) DO UPDATE SET
+      outlet_status = EXCLUDED.outlet_status,
+      update_time = EXCLUDED.update_time
+    WHERE outlet_status.update_time IS DISTINCT FROM EXCLUDED.update_time;
   `;
   const values = [
     name,

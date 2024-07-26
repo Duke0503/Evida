@@ -3,27 +3,28 @@ const { insert_query } = require('./insert_query');
 const save_data_to_database = async (
   outlet,
 ) => {
-  let box_status = '';
-  if (outlet.ebox_status == 0) {
-    box_status = 'online';
-  } else box_status = 'offline';
+  const box_connection = get_box_connection(outlet.box_connection);
 
   await insert_query(
-    outlet.ebox_id,
-    outlet.ebox_name,
+    outlet.box_id,
+    outlet.location_name,
     new Date(),
-    outlet.outlet_id,
-    box_status,
+    outlet.outlet_number,
+    box_connection,
     outlet.outlet_status,
-    outlet.system_status,
+    outlet.command,
     outlet.outlet_current / 1000,
-    outlet.current_external_meter,
+    outlet.external_meter_current,
     outlet.outlet_voltage,
-    outlet.voltage_external_meter,
-    outlet.power_factor,
-    outlet.power_consumption / (3.6 * 1000 * 1000),
-  )
-    
+    outlet.external_meter_voltage,
+    outlet.outlet_power_factor,
+    outlet.outlet_power_consumption / (3.6 * 1000 * 1000),
+  )  
+};
+
+const get_box_connection = (box_connection) => {
+  if (box_connection == 0) return 'online';
+  return 'offline'
 };
 
 module.exports = { save_data_to_database };
