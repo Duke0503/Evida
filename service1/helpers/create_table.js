@@ -10,7 +10,7 @@ const create_app_user_table = async () => {
       phone_number text COLLATE pg_catalog."default",
       bike_brand text COLLATE pg_catalog."default",
       bike_model text COLLATE pg_catalog."default",
-      joining_date timestamp with time zone,
+      joining_date timestamp without time zone,
       wallet_amount real,
       activated boolean,
       enabled boolean,
@@ -20,8 +20,8 @@ const create_app_user_table = async () => {
       country text COLLATE pg_catalog."default",
       state text COLLATE pg_catalog."default",
       postal_code text COLLATE pg_catalog."default",
-      created_at timestamp with time zone,
-      updated_at timestamp with time zone,
+      created_at timestamp without time zone,
+      updated_at timestamp without time zone,
       CONSTRAINT app_user_pkey PRIMARY KEY (user_id)
     )
 
@@ -50,8 +50,8 @@ const create_boxes_table = async () => {
       consump_fee integer,
       available text COLLATE pg_catalog."default",
       status boolean,
-      created_at timestamp with time zone,
-      updated_at timestamp with time zone,
+      created_at timestamp without time zone,
+      updated_at timestamp without time zone,
       CONSTRAINT boxes_pkey PRIMARY KEY (box_id)
     )
 
@@ -90,8 +90,8 @@ const create_transaction_table = async () => {
       paid real,
       total_consumed_fee real,
       reason_closed text COLLATE pg_catalog."default",
-      created_at timestamp with time zone,
-      updated_at timestamp with time zone,
+      created_at timestamp without time zone,
+      updated_at timestamp without time zone,
       CONSTRAINT transactions_pkey PRIMARY KEY (id, invoice_id)
     )
 

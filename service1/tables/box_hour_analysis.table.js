@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS public.box_hour_analysis
 (
     id SERIAL PRIMARY KEY,
 	box_id text,
-    time_ timestamp with time zone,
+    time_ timestamp without time zone,
     number_of_transaction_events integer
 );
 
