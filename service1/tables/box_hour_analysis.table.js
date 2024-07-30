@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS public.box_hour_analysis
 (
     id SERIAL PRIMARY KEY,
 	box_id text,
-    time_ timestamp without time zone,
+	location_name text,
+    time_ timestamp with time zone,
     number_of_transaction_events integer
 );
 
@@ -45,12 +46,16 @@ BEGIN
         GROUP BY SG.box_id, SG.time_
     )
 	
-	INSERT INTO public.box_hour_analysis (box_id, time_, number_of_transaction_events)
+	INSERT INTO public.box_hour_analysis (box_id, location_name, time_, number_of_transaction_events)
     SELECT 
-       box_id,
-	   time_,
-	   charging_count
-	FROM box_analyst;
+       BA.box_id,
+	   B.box_name,
+	   BA.time_,
+	   BA.charging_count
+	
+	FROM box_analyst AS BA
+	LEFT JOIN public.boxes B
+	ON BA.box_id = B.box_id;
 END $$;
       `);
     console.log("Table box_hour_analysis created and data inserted successfully.");
