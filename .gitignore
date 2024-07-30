@@ -9,6 +9,5 @@ service1/node_modules
 Backup/.env
 Backup/node_modules
 .vscode
-storage/
 
 
