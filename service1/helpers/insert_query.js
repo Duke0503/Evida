@@ -259,8 +259,32 @@ const insert_transaction_query = async(
   };
 };
 
+const insert_active_outlet_query = async(
+  box_id, 
+  number_of_active_outlets
+) => {
+  const insert_query = `
+  INSERT INTO public.active_outlet (box_id, number_of_active_outlets)
+  VALUES ($1, $2)
+  ON CONFLICT (box_id) DO UPDATE
+  SET number_of_active_outlets = EXCLUDED.number_of_active_outlets;
+  `;
+
+  const values = [
+    box_id, 
+    number_of_active_outlets
+  ];
+
+  try {
+    await client.query(insert_query, values);
+  } catch (err) {
+    console.error('Error inserting row', err);
+  };
+};
+
 module.exports = {
   insert_ebox_query,
   insert_user_query,
   insert_transaction_query,
+  insert_active_outlet_query,
 }

@@ -2,8 +2,7 @@ require('dotenv').config();
 const ping = require('ping');
 const { fetch_ebox_data, fetch_user_data, fetch_transaction_data } = require('./helpers/fetch_api');
 const client = require('./config/database.js');
-const cron = require('node-cron');
-const { create_app_user_table, create_boxes_table, create_transaction_table } = require('./helpers/create_table.js');
+const { create_app_user_table, create_boxes_table, create_transaction_table, create_active_outlet_table } = require('./helpers/create_table.js');
 const { handle_data } = require('./helpers/handle_data.js');
 
 const host = 'google.com';
@@ -39,14 +38,15 @@ async function fetch_data_from_api() {
   await create_app_user_table();
   await create_boxes_table();
   await create_transaction_table();
+  await create_active_outlet_table();
   
   process.on('exit', () => {
     client.end();
   });
 
-  await fetch_ebox_data();
-  await fetch_user_data();
-  await fetch_transaction_data();
+  // await fetch_ebox_data();
+  // await fetch_user_data();
+  // await fetch_transaction_data();
   await handle_data();
 
 }

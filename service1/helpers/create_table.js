@@ -107,8 +107,27 @@ const create_transaction_table = async () => {
   };
 };
 
+const create_active_outlet_table = async () => {
+  const create_active_outlet_table_query = `
+CREATE TABLE IF NOT EXISTS public.active_outlet
+(
+  id SERIAL PRIMARY KEY,
+  box_id text COLLATE pg_catalog."default" NOT NULL,
+  number_of_active_outlets int,
+  CONSTRAINT unique_box_id UNIQUE (box_id)
+)
+TABLESPACE pg_default;
+  `
+  try {
+    await client.query(create_active_outlet_table_query);
+  } catch (err) {
+    console.error('Error executing query', err.stack);
+  };
+};
+
 module.exports = {
   create_app_user_table,
   create_boxes_table,
   create_transaction_table,
+  create_active_outlet_table,
 }
