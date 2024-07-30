@@ -72,11 +72,11 @@ FROM (
             COUNT("Time") AS "Consecutive Months", 
             SUM("Power Consumption") as "Power Consumption", 
             SUM("Transaction Events") as "Transaction Events", 
-            SUM("Activation Fee") / 1000000 as "Activation Fee (Million VND)", 
-            SUM("kWh Fee") / 1000000 as "kWh Fee (Million VND)", 
-            SUM("Discount Pricing") / 1000000 as "Discount Pricing (Million VND)",  
+            SUM("Activation Fee") as "Activation Fee", 
+            SUM("kWh Fee") as "kWh Fee", 
+            SUM("Discount Pricing") as "Discount Pricing",  
             SUM("Number of Discounts") as "Number of Discounts", 
-            SUM("Revenue without Discount") / 1000000 as "Revenue without Discount (Million VND)"
+            SUM("Revenue without Discount") as "Revenue without Discount"
         FROM (
             SELECT 
                 user_id as "User ID", 
