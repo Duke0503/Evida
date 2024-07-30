@@ -38,8 +38,8 @@ WHERE
 ALTER TABLE public.valid_transaction
     ADD CONSTRAINT merge_time_trans_pkey PRIMARY KEY (id, invoice_id),
     ALTER COLUMN invoice_id SET NOT NULL,
-    ALTER COLUMN merged_start_time SET DATA TYPE timestamp without time zone,
-    ALTER COLUMN merged_end_time SET DATA TYPE timestamp without time zone,
+    ALTER COLUMN merged_start_time SET DATA TYPE timestamp with time zone,
+    ALTER COLUMN merged_end_time SET DATA TYPE timestamp with time zone,
     ALTER COLUMN box_id SET DATA TYPE text COLLATE pg_catalog."default",
     ALTER COLUMN outlet_id SET DATA TYPE text COLLATE pg_catalog."default",
     ALTER COLUMN reason_closed SET DATA TYPE text COLLATE pg_catalog."default";
