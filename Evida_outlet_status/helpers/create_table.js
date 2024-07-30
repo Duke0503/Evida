@@ -29,6 +29,8 @@ const create_outlet_data_table = async () => {
 
     ALTER TABLE IF EXISTS public.outlet_data
     OWNER to postgres;
+
+    CREATE INDEX idx_outlet_data_created_at ON outlet_data (created_at);
   `;
 
   try {

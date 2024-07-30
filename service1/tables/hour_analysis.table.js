@@ -126,6 +126,19 @@ BEGIN
 
 END $$;
 
+DROP TABLE IF EXISTS public.hour_analysis_average;
+
+CREATE TABLE hour_analysis_average AS (
+	SELECT 
+	    (EXTRACT(HOUR FROM time_) + 1) % 24 AS "Hour",
+	    SUM(active_user) / COUNT(DISTINCT DATE(time_ )) AS "average active users"
+	FROM hour_analysis
+	WHERE 
+	    EXTRACT(YEAR FROM time_) = EXTRACT(YEAR FROM CURRENT_DATE)
+	    AND EXTRACT(MONTH FROM time_) = EXTRACT(MONTH FROM CURRENT_DATE) - 1
+	GROUP BY (EXTRACT(HOUR FROM time_) + 1) % 24
+)
+    
       `);
       console.log("Table hour_analysis created and data inserted successfully.");
   } catch (err) {

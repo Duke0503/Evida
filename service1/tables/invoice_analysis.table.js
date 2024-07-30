@@ -28,7 +28,7 @@ tmp2 AS (
     SELECT 
         EXTRACT(YEAR FROM tmp.new_time_start) AS year_,
         LPAD(EXTRACT(MONTH FROM tmp.new_time_start)::TEXT, 2, '0') AS month_,
-        DATE_TRUNC('month', tmp.new_time_start) + INTERVAL '1 month - 1 day' AS time_,
+        DATE_TRUNC('month', tmp.new_time_start) AS time_,
         SUM(CASE WHEN tmp.active_fee_percent < 20 THEN 1 ELSE 0 END) AS invoice_act_fee_lt_20,
         SUM(CASE WHEN tmp.active_fee_percent BETWEEN 20 AND 50 THEN 1 ELSE 0 END) AS invoice_act_fee_20_to_50,
         SUM(CASE WHEN tmp.active_fee_percent > 50 THEN 1 ELSE 0 END) AS invoice_act_fee_gt_50,
@@ -37,7 +37,7 @@ tmp2 AS (
     GROUP BY 
         EXTRACT(YEAR FROM tmp.new_time_start),
         LPAD(EXTRACT(MONTH FROM tmp.new_time_start)::TEXT, 2, '0'),
-        DATE_TRUNC('month', tmp.new_time_start) + INTERVAL '1 month - 1 day'
+        DATE_TRUNC('month', tmp.new_time_start) 
 ),
 tmp3 AS (
     SELECT 

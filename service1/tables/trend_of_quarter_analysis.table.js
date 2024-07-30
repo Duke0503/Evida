@@ -33,56 +33,56 @@ WITH trend_of_quarter_analysis AS (
     GROUP BY year_, quarter_, time_
 )
 SELECT
-    t.year_,
-    t.quarter_,
-    t.time_::DATE AS time_current,
-    t.total_user_on_quarter AS total_active_user,
-    t.number_box_active,
-    t.number_of_outlet,
-    t.total_transaction,
-    t.total_power,
-    t.total_w_o_revenue,
-    t.number_of_promotion AS number_of_discount,
-    t.total_promotion AS discount,
-    t.total_cost_vnd,
+    t.year_ as "Year",
+    t.quarter_ as "Quarter",
+    t.time_::DATE AS "Time",
+    t.total_user_on_quarter AS "Active Users",
+    t.number_box_active AS "Active Boxes",
+    t.number_of_outlet AS "Active Outlets",
+    t.total_transaction as "Transaction Events",
+    t.total_power as "Power Consumption",
+    t.total_w_o_revenue / 1000000 "Revenue without Discount (Million VND)",
+    t.number_of_promotion AS "Number of Discounts",
+    t.total_promotion / 1000000 AS "Discount Pricing (Million VND)",
+    t.total_cost_vnd / 1000000 as "Revenue after Discount (Million VND)",
     
-    LAG(t.time_, 1) OVER (ORDER BY t.year_, t.quarter_) AS previous_quarter,
+    LAG(t.time_, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Previous Quarter",
     
-    LAG(t.total_user_on_quarter, 1) OVER (ORDER BY t.year_, t.quarter_) AS user_prev,
-    t.total_user_on_quarter - LAG(t.total_user_on_quarter, 1) OVER (ORDER BY t.year_, t.quarter_) AS user_compare,
-    ROUND(ROUND(CAST((t.total_user_on_quarter - LAG(t.total_user_on_quarter, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / t.total_user_on_quarter, 2) AS percentage_user_compare,
+    LAG(t.total_user_on_quarter, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Previous Active Users",
+    t.total_user_on_quarter - LAG(t.total_user_on_quarter, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Compare Active Users Change",
+    ROUND(ROUND(CAST((t.total_user_on_quarter - LAG(t.total_user_on_quarter, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / (LAG(t.total_user_on_quarter, 1) OVER (ORDER BY t.year_, t.quarter_)), 2) AS "Percentage Active Users Change",
     
-    LAG(t.number_box_active, 1) OVER (ORDER BY t.year_, t.quarter_) AS box_prev_quarter,
-    t.number_box_active - LAG(t.number_box_active, 1) OVER (ORDER BY t.year_, t.quarter_) AS box_compare,
-    ROUND(ROUND(CAST((t.number_box_active - LAG(t.number_box_active, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / t.number_box_active, 2) AS percentage_box_compare,
+    LAG(t.number_box_active, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Previous Active Boxes",
+    t.number_box_active - LAG(t.number_box_active, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Compare Active Boxes Change",
+    ROUND(ROUND(CAST((t.number_box_active - LAG(t.number_box_active, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / (LAG(t.number_box_active, 1) OVER (ORDER BY t.year_, t.quarter_)), 2) AS "Percentage Active Boxes Change",
     
-    LAG(t.number_of_outlet, 1) OVER (ORDER BY t.year_, t.quarter_) AS outlet_prev,
-    t.number_of_outlet - LAG(t.number_of_outlet, 1) OVER (ORDER BY t.year_, t.quarter_) AS outlet_compare,
-    ROUND(ROUND(CAST((t.number_of_outlet - LAG(t.number_of_outlet, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / t.number_of_outlet, 2) AS percentage_outlet_compare,
+    LAG(t.number_of_outlet, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Previous Active Outlets",
+    t.number_of_outlet - LAG(t.number_of_outlet, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Compare Active Outlets Change",
+    ROUND(ROUND(CAST((t.number_of_outlet - LAG(t.number_of_outlet, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / (LAG(t.number_of_outlet, 1) OVER (ORDER BY t.year_, t.quarter_)), 2) AS "Percentage Active Outlets Change",
     
-    LAG(t.total_transaction, 1) OVER (ORDER BY t.year_, t.quarter_) AS trans_prev_quarter,
-    t.total_transaction - LAG(t.total_transaction, 1) OVER (ORDER BY t.year_, t.quarter_) AS trans_compare,
-    ROUND(ROUND(CAST((t.total_transaction - LAG(t.total_transaction, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / t.total_transaction, 2) AS percentage_trans_compare,
+    LAG(t.total_transaction, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Previous Transaction Events",
+    t.total_transaction - LAG(t.total_transaction, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Compare Transaction Events Change",
+    ROUND(ROUND(CAST((t.total_transaction - LAG(t.total_transaction, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / (LAG(t.total_transaction, 1) OVER (ORDER BY t.year_, t.quarter_)), 2) AS "Percentage Transaction Events Change",
     
-    LAG(t.total_power, 1) OVER (ORDER BY t.year_, t.quarter_) AS power_prev_quarter,
-    t.total_power - LAG(t.total_power, 1) OVER (ORDER BY t.year_, t.quarter_) AS power_compare,
-    ROUND(ROUND(CAST((t.total_power - LAG(t.total_power, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / t.total_power::numeric, 2) AS percentage_power_compare,
+    LAG(t.total_power, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Previous Power Consumption",
+    t.total_power - LAG(t.total_power, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Compare Previous Power Consumption",
+    ROUND(ROUND(CAST((t.total_power - LAG(t.total_power, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / CAST( LAG(t.total_power, 1) OVER (ORDER BY t.year_, t.quarter_) AS NUMERIC), 2) AS "Percentage Previous Power Consumption",
     
-    LAG(t.total_w_o_revenue, 1) OVER (ORDER BY t.year_, t.quarter_) AS cost_w_o_prev,
-    t.total_w_o_revenue - LAG(t.total_w_o_revenue, 1) OVER (ORDER BY t.year_, t.quarter_) AS cost_w_o_compare,
-    ROUND(ROUND(CAST((t.total_w_o_revenue - LAG(t.total_w_o_revenue, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / t.total_w_o_revenue::numeric, 2) AS percentage_cost_w_o_compare,
+    LAG(t.total_w_o_revenue, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Previous Revenue without Discount",
+    t.total_w_o_revenue - LAG(t.total_w_o_revenue, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Compare Previous Revenue without Discount Change",
+    ROUND(ROUND(CAST((t.total_w_o_revenue - LAG(t.total_w_o_revenue, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / CAST(LAG(t.total_w_o_revenue, 1) OVER (ORDER BY t.year_, t.quarter_) AS NUMERIC), 2) AS "Percentage Previous Revenue without Discount Change",
     
-    LAG(t.number_of_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) AS nb_discount_prev,
-    t.number_of_promotion - LAG(t.number_of_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) AS nb_discount_compare,
-    ROUND(ROUND(CAST((t.number_of_promotion - LAG(t.number_of_promotion, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / t.number_of_promotion, 2) AS percentage_nb_discount_compare,
+    LAG(t.number_of_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Previous Number of Discounts",
+    t.number_of_promotion - LAG(t.number_of_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Compare Previous Number of Discounts Change",
+    ROUND(ROUND(CAST((t.number_of_promotion - LAG(t.number_of_promotion, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / (LAG(t.number_of_promotion, 1) OVER (ORDER BY t.year_, t.quarter_)), 2) AS "Percentage Previous Number of Discounts Change",
     
-    LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) AS discount_prev,
-    t.total_promotion - LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) AS discount_compare,
-    ROUND(ROUND(CAST((t.total_promotion - LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / t.total_promotion::numeric, 2) AS percentage_discount_compare,
+    LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Previous Discount Pricing",
+    t.total_promotion - LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Compare Previous Discount Pricing Change",
+    ROUND(ROUND(CAST((t.total_promotion - LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / CAST(LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) AS NUMERIC), 2) AS "Percentage Previous Discount Pricing Change",
     
-    LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.year_, t.quarter_) AS cost_prev,
-    t.total_cost_vnd - LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.year_, t.quarter_) AS cost_compare,
-    ROUND(ROUND(CAST((t.total_cost_vnd - LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / t.total_cost_vnd::numeric, 2) AS percentage_cost_compare,
+    LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Previous Revenue after Discount",
+    t.total_cost_vnd - LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Compare Previous Revenue after Discount Change",
+    ROUND(ROUND(CAST((t.total_cost_vnd - LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / CAST(LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.year_, t.quarter_) AS NUMERIC), 2) AS "Percentage Previous Revenue after Discount Change",
     
     CASE 
         WHEN t.total_user_on_quarter > LAG(t.total_user_on_quarter, 1) OVER (ORDER BY t.year_, t.quarter_) THEN 'UP'
@@ -135,7 +135,7 @@ ORDER BY t.year_, t.quarter_;
 
 -- Adding primary key constraint
 ALTER TABLE public.trend_of_quarter_analysis
-ADD CONSTRAINT trend_of_quarter_analysis_pk PRIMARY KEY (year_, quarter_);
+ADD CONSTRAINT trend_of_quarter_analysis_pk PRIMARY KEY ("Year", "Quarter");
 
       `);
       console.log("Table trend_of_quarter_analysis created and data inserted successfully.");

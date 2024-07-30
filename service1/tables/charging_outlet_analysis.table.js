@@ -7,24 +7,24 @@ DROP TABLE IF EXISTS public.charging_outlet_analysis;
 
 CREATE TABLE public.charging_outlet_analysis AS
 SELECT 
-    Trans.box_id,
-    B.box_name,
-    Trans.outlet_id,
-    date_trunc('month', Trans.merged_start_time) + interval '1 month - 1 day' AS TIME_,
-    EXTRACT(YEAR FROM Trans.merged_start_time) AS YEAR_,
-    EXTRACT(MONTH FROM Trans.merged_start_time) AS MONTH_,
-    COUNT(DISTINCT Trans.user_id) AS ACTIVE_USER,
-    COUNT(Trans.invoice_id) AS CHARGING_EVENT,
-    SUM(Trans.wattage_consumed) AS TOTAL_POWER_kWh,
-    SUM(Trans.activation_fee) AS ACTIVATION_FEE,
-    SUM(Trans.total_consumed_fee) AS kWh_FEE,
-    SUM(Trans.discount_amount) AS PROMOTION,
-    SUM(Trans.paid) AS TOTAL_COST_VNĐ,
-    CASE WHEN COUNT(Trans.invoice_id) > 39 THEN 100 ELSE ROUND((COUNT(Trans.invoice_id)::numeric / 40) * 100, 2) END AS EFFECTIVE
+    Trans.box_id as "Box ID",
+    B.box_name as "Location Name",
+    Trans.outlet_id as "Outlet Number",
+    date_trunc('month', Trans.merged_start_time) AS "Time",
+    EXTRACT(YEAR FROM Trans.merged_start_time) AS "Year",
+    EXTRACT(MONTH FROM Trans.merged_start_time) AS "Month",
+    COUNT(DISTINCT Trans.user_id) AS "Active Users",
+    COUNT(Trans.invoice_id) AS "Transaction Events",
+    SUM(Trans.wattage_consumed) AS "Power Consumption",
+    SUM(Trans.activation_fee) AS "Activation Fee",
+    SUM(Trans.total_consumed_fee) AS "kWh Fee",
+    SUM(Trans.discount_amount) AS "Discount Pricing",
+    SUM(Trans.paid) AS "Revenue after Discount",
+    CASE WHEN COUNT(Trans.invoice_id) > 39 THEN 100 ELSE ROUND((COUNT(Trans.invoice_id)::numeric / 40) * 100, 2) END AS "Utilization"
 FROM public.valid_transaction Trans
 JOIN public.boxes B ON Trans.box_id = B.box_id
-GROUP BY Trans.box_id, B.box_name, Trans.outlet_id, EXTRACT(YEAR FROM Trans.merged_start_time), EXTRACT(MONTH FROM Trans.merged_start_time), date_trunc('month', Trans.merged_start_time) + interval '1 month - 1 day'
-ORDER BY YEAR_ DESC, MONTH_ DESC;
+GROUP BY Trans.box_id, B.box_name, Trans.outlet_id, EXTRACT(YEAR FROM Trans.merged_start_time), EXTRACT(MONTH FROM Trans.merged_start_time), date_trunc('month', Trans.merged_start_time)
+ORDER BY "Year" DESC, "Month" DESC;
 
       `);
     console.log("Table charging_outlet_analysis created and data inserted successfully.");
