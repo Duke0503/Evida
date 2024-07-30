@@ -7,6 +7,7 @@ const { insert_time_records } = require('../helpers/insert_time_records');
 const { trend_of_month_analysis } = require('../tables/trend_of_month_analysis.table');
 const { trend_of_quarter_analysis } = require('../tables/trend_of_quarter_analysis.table');
 const { active_outlet } = require('../tables/active_outlet.table');
+const { box_hour_analysis } = require('../tables/box_hour_analysis.table');
 
 const handle_data = async () => {
     await active_outlet();
@@ -18,7 +19,7 @@ const handle_data = async () => {
     await hour_analysis(); // Question 4
     await app_user_analysis(); // Question 5
     await invoice_analysis(); // Question 6
-
+    await box_hour_analysis();
 }
 
 module.exports = { handle_data };
