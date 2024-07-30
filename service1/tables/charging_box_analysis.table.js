@@ -36,7 +36,7 @@ CREATE TABLE detail_box_analysis AS (
     END AS "Box ID",
 	CASE 
         WHEN CBA1."Time" IS NULL THEN 'ACTIVE' 
-        ELSE 'UNACTIVE'
+        ELSE 'INACTIVE'
     END AS "Status",
     CASE 
 		WHEN CBA1."Location Name" IS NULL then CBA2."Location Name"
