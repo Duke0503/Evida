@@ -1,61 +1,73 @@
-const cron = require('node-cron');
-const { Client } = require('pg');
-const getLastUpdateTime = require('./helpers/getLastUpdateTime'); 
-const { dbConfig, db2Config } = require('./config/database');
+require('dotenv').config();
+const postgresClient = require('./config/postgres-config.js'); // PostgreSQL client
+const mysqlConnection = require('./config/mysql-config.js'); // MySQL connection
+const checkAndCreatePowerConsumptionTable = require('./helpers/checkAndCreatePowerConsumptionTable.js'); // Import the power consumption module
+const checkAndCreateOutletDataTable = require('./helpers/checkAndCreateOutletDataTable.js'); // Import the outlet data module
+const transferData = require('./helpers/transferData.js'); // Import the transferData module
+const cron = require('node-cron'); // Import node-cron
 
-const transferAppUserData = require('./helpers/transferAppUserData'); 
-const transferBoxesData = require('./helpers/transferBoxesData'); 
-const transferOtherData = require('./helpers/transferOtherData'); 
+const connectPostgres = () => {
+  return new Promise((resolve, reject) => {
+    postgresClient.connect(err => {
+      if (err) {
+        console.error('Error connecting to PostgreSQL', err);
+        reject(err);
+      } else {
+        console.log('Connected to PostgreSQL!');
+        resolve();
+      }
+    });
+  });
+};
 
-const appUserTables = ['app_user'];
-const appBoxesTables = ['boxes'];
-const otherTables = ['outlet_data', 'power_consumption', 'transactions'];
+const connectMySQL = async () => {
+  try {
+    await mysqlConnection.getConnection();
+    console.log('Connected to MySQL!');
+  } catch (err) {
+    console.error('Error connecting to MySQL:', err.stack);
+    throw err;
+  }
+};
 
-async function runAppUserTransferData(clientDB2) {
-    try {
-        for (const table of appUserTables) {
-            // Pass getLastUpdateTime function to transferData
-            await transferAppUserData(table, (tableName) => getLastUpdateTime(tableName, clientDB2));
-        }
-    } catch (err) {
-        console.error(`Error transferring data for ${table}:`, err);
-    }
-}
-async function runBoxesTransferData(clientDB2) {
-    try {
-        for (const table of appBoxesTables) {
-            // Pass getLastUpdateTime function to transferData
-            await transferBoxesData(table, (tableName) => getLastUpdateTime(tableName, clientDB2));
-        }
-    } catch (err) {
-        console.error(`Error transferring data for ${table}:`, err);
-    }
-}
+const startCronJob = async () => {
+  try {
+    // Connect to PostgreSQL
+    await connectPostgres();
 
-async function runOtherTransferData() {
-    for (const table of otherTables) {
-        await transferOtherData(table);
-    }
-}
+    // Connect to MySQL
+    await connectMySQL();
 
-async function runAllTransfers() {
-    const clientDB2 = new Client(db2Config);
-    try {
-        await clientDB2.connect();
+    // Check and create power_consumption table if not exists
+    await checkAndCreatePowerConsumptionTable();
 
-        await runAppUserTransferData(clientDB2);
-         await runBoxesTransferData(clientDB2);
-        await runOtherTransferData();
-    } catch (err) {
-        console.error('Error during data transfer:', err);
-    } finally {
-        await clientDB2.end();
-    }
-}
+    // Check and create outlet_data table if not exists
+    await checkAndCreateOutletDataTable();
 
-// Schedule the data transfer process to run at 12 AM every day 
-cron.schedule('*/25 * * * * *', () => {
-    console.log('-                                                  -');
-    console.log('Running data transfer process at 12 AM every day...');
-    runAllTransfers();
-});
+    // Schedule transferData to run at 12 AM daily
+    cron.schedule('*/10 * * * * *', async () => {
+      try {
+        console.log('Running transferData job at 12 AM');
+
+        await transferData('power_consumption', [
+          'id', 'ebox_id', 'ebox_name', 'outlet_0_status', 'outlet_1_status', 'outlet_2_status',
+          'outlet_3_status', 'outlet_4_status', 'outlet_5_status', 'outlet_6_status', 'outlet_7_status',
+          'outlet_8_status', 'outlet_9_status', 'ebox_status', 'power_consumption', 'pme_value',
+          'timestamp', 'created_at', 'updated_at'
+        ]);
+
+        await transferData('outlet_data', [
+          'id', 'ebox_id', 'ebox_name', 'box_status', 'outlet_id', 'outlet_status', 'system_status',
+          'timestamp', 'user_id', 'user_name', 'outlet_current', 'current_external_meter', 'outlet_voltage',
+          'voltage_external_meter', 'power_factor', 'power_consumption', 'created_at', 'updated_at'
+        ]);
+      } catch (err) {
+        console.error('Error executing transferData job:', err);
+      }
+    });
+  } catch (err) {
+    console.error('Error during initial connection setup:', err);
+  }
+};
+
+startCronJob();
