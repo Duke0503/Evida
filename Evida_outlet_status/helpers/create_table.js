@@ -1,8 +1,8 @@
 const client = require('../config/database');
 
-const create_outlet_data_table = async () => {
-  const create_outlet_data_query = `
-    CREATE TABLE IF NOT EXISTS public.outlet_data
+const create_box_photograph_table = async () => {
+  const create_box_photograph_query = `
+    CREATE TABLE IF NOT EXISTS public.box_photograph
     (
       id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
       box_id text COLLATE pg_catalog."default",
@@ -22,20 +22,20 @@ const create_outlet_data_table = async () => {
       outlet_power_consumption real,
       created_at timestamp with time zone,
       updated_at timestamp with time zone,
-      CONSTRAINT outlet_data_pkey PRIMARY KEY (id)
+      CONSTRAINT box_photograph_pkey PRIMARY KEY (id)
     )
 
     TABLESPACE pg_default;
 
-    ALTER TABLE IF EXISTS public.outlet_data
+    ALTER TABLE IF EXISTS public.box_photograph
     OWNER to postgres;
 
-    CREATE INDEX IF NOT EXISTS idx_outlet_data_created_at ON outlet_data (created_at);
+    CREATE INDEX IF NOT EXISTS idx_box_photograph_created_at ON box_photograph (created_at);
 
   `;
 
   try {
-    await client.query(create_outlet_data_query);
+    await client.query(create_box_photograph_query);
   } catch (err) {
     console.error('Error executing query', err.stack);
   };
@@ -101,7 +101,7 @@ const create_outlets_table = async () => {
 };
 
 module.exports = {
-  create_outlet_data_table,
+  create_box_photograph_table,
   create_outlet_status_table,
   create_outlets_table,
 }

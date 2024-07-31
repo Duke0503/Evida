@@ -23,7 +23,7 @@ $ npm start
 ## Attributes of the Data
 ![Outlet_status](https://github.com/Duke0503/Evida/blob/main/Images/outlet_status.png?raw=true)
 
-### Table Name: outlet_data
+### Table Name: box_photograph
 
 1. **id**
    - **Description**: The identifier of record in database.

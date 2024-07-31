@@ -146,7 +146,7 @@ const insert_query_statemnet = async (
   await update_outlet(`${box_id}_${outlet_number}`);
 
   const insert_query = `
-    INSERT INTO outlet_data (
+    INSERT INTO box_photograph (
       box_id, 
       location_name,
       timestamp,
