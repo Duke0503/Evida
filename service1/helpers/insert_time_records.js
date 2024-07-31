@@ -22,10 +22,8 @@ async function check_table_time() {
         );
       `;
       await client.query(create_table_query);
-      console.log("Table 'table_time' created successfully.");
-    } else {
-      console.log("Table 'table_time' already exists.");
     }
+    
   } catch (err) {
     console.error("Error ensuring table 'table_time' exists:", err);
   };
@@ -41,8 +39,6 @@ async function get_min_start_time() {
     const result = await client.query(query);
 
     const min_start_time = result.rows[0].min_start_time;
-
-    console.log('Min Start Time (truncated to 00:00:00):', min_start_time);
 
     return min_start_time;
   } catch (err) {

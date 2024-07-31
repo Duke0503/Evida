@@ -58,7 +58,7 @@ BEGIN
 	ON BA.box_id = B.box_id;
 END $$;
       `);
-    console.log("Table box_hour_analysis created and data inserted successfully.");
+    console.log(`Table "box_hour_analysis"         created and data inserted successfully.`);
   } catch (err) {
       console.error('Error executing queries', err);
   }

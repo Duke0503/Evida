@@ -44,9 +44,9 @@ ALTER TABLE public.valid_transaction
     ALTER COLUMN outlet_id SET DATA TYPE text COLLATE pg_catalog."default",
     ALTER COLUMN reason_closed SET DATA TYPE text COLLATE pg_catalog."default";
     
-CREATE INDEX valid_merged_start_time_idx ON valid_transaction(merged_start_time);
+CREATE INDEX IF NOT EXISTS valid_merged_start_time_idx ON valid_transaction(merged_start_time);
       `)
-    console.log("Table valid_transaction created and data inserted successfully.");
+    console.log(`Table "valid_transaction"         created and data inserted successfully.`);
   } catch (err) {
       console.error('Error executing queries', err);
   };

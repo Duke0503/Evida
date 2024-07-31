@@ -17,8 +17,6 @@ const insert_outlet = async (
   box_id, 
   location_name,
   timestamp,
-  user_id,
-  user_name,
   outlet_number,
   box_connection,
   outlet_status,
@@ -36,8 +34,6 @@ const insert_outlet = async (
       box_id, 
       location_name,
       timestamp,
-      user_id,
-      user_name,
       outlet_number,
       box_connection,
       outlet_status,
@@ -51,13 +47,11 @@ const insert_outlet = async (
       created_at,
       updated_at
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), NOW())
     ON CONFLICT (name) DO UPDATE SET
       box_id = EXCLUDED.box_id,
       location_name = EXCLUDED.location_name,
       timestamp = EXCLUDED.timestamp,
-      user_id = EXCLUDED.user_id,
-      user_name = EXCLUDED.user_name,
       outlet_number = EXCLUDED.outlet_number,
       box_connection = EXCLUDED.box_connection,
       outlet_status = EXCLUDED.outlet_status,
@@ -77,8 +71,6 @@ const insert_outlet = async (
     box_id,
     location_name,
     timestamp,
-    user_id,
-    user_name,
     outlet_number,
     box_connection,
     outlet_status,

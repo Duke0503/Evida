@@ -134,7 +134,7 @@ ALTER TABLE public.trend_of_month_analysis
 ADD CONSTRAINT trend_of_month_analysis_pk PRIMARY KEY ("Time");
 
       `);
-      console.log("Table trend_of_month_analysis created and data inserted successfully.");
+      console.log(`Table "trend_of_month_analysis"   created and data inserted successfully.`);
   } catch (err) {
       console.error('Error executing queries', err);
   };

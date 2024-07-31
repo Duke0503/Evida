@@ -30,7 +30,7 @@ const create_power_consumption_table = async () => {
     ALTER TABLE IF EXISTS public.power_consumption
         OWNER to postgres;
 
-    CREATE INDEX idx_power_consumption_created_at ON power_consumption (created_at);
+    CREATE INDEX IF NOT EXISTS idx_power_consumption_created_at ON power_consumption (created_at);
     `;
   try {
     await client.query(create_power_consumption_table_query);

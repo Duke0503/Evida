@@ -4,7 +4,7 @@ const trend_of_quarter_analysis = async () => {
   try {
     await client.query(`
 
-DROP TABLE public.trend_of_quarter_analysis;
+DROP TABLE IF EXISTS public.trend_of_quarter_analysis;
 
 CREATE TABLE public.trend_of_quarter_analysis AS
 WITH trend_of_quarter_analysis AS (
@@ -138,7 +138,7 @@ ALTER TABLE public.trend_of_quarter_analysis
 ADD CONSTRAINT trend_of_quarter_analysis_pk PRIMARY KEY ("Year", "Quarter");
 
       `);
-      console.log("Table trend_of_quarter_analysis created and data inserted successfully.");
+      console.log(`Table "trend_of_quarter_analysis" created and data inserted successfully.`);
   } catch (err) {
       console.error('Error executing queries', err);
   };

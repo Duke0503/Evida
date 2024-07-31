@@ -30,7 +30,8 @@ const create_outlet_data_table = async () => {
     ALTER TABLE IF EXISTS public.outlet_data
     OWNER to postgres;
 
-    CREATE INDEX idx_outlet_data_created_at ON outlet_data (created_at);
+    CREATE INDEX IF NOT EXISTS idx_outlet_data_created_at ON outlet_data (created_at);
+
   `;
 
   try {
@@ -75,8 +76,6 @@ const create_outlets_table = async () => {
       outlet_status integer,
       command integer,
       "timestamp" timestamp with time zone,
-      user_id integer,
-      user_name text,
       outlet_current real,
       external_meter_current real,
       outlet_voltage real,

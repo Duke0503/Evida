@@ -140,7 +140,7 @@ CREATE TABLE hour_analysis_average AS (
 )
     
       `);
-      console.log("Table hour_analysis created and data inserted successfully.");
+      console.log(`Table "hour_analysis"             created and data inserted successfully.`);
   } catch (err) {
       console.error('Error executing queries', err);
   };

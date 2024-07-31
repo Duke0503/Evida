@@ -53,7 +53,7 @@ INTO public.invoice_analysis
 FROM tmp3;
 
       `);
-      console.log("Table invoice_analysis created and data inserted successfully.");
+      console.log(`Table "invoice_analysis"          created and data inserted successfully.`);
   } catch (err) {
       console.error('Error executing queries', err);
   };

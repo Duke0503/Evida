@@ -151,7 +151,7 @@ LEFT JOIN customer_group CG ON UA."Group ID" = CG.id
 LEFT JOIN app_user AU ON UA."User ID" = AU.user_id;
 
       `);
-      console.log("Table app_user_analysis created and data inserted successfully.");
+      console.log(`Table "app_user_analysis"         created and data inserted successfully.`);
   } catch (err) {
       console.error('Error executing queries', err);
   };

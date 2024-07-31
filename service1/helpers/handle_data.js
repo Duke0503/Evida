@@ -8,6 +8,8 @@ const { trend_of_month_analysis } = require('../tables/trend_of_month_analysis.t
 const { trend_of_quarter_analysis } = require('../tables/trend_of_quarter_analysis.table');
 const { active_outlet } = require('../tables/active_outlet.table');
 const { box_hour_analysis } = require('../tables/box_hour_analysis.table');
+const { detail_user_analysis } = require('../tables/detail_user_analysis.table');
+const { detail_box_analysis } = require('../tables/detail_box_analysis.table');
 
 const handle_data = async () => {
     await active_outlet();
@@ -20,6 +22,8 @@ const handle_data = async () => {
     await app_user_analysis(); // Question 5
     await invoice_analysis(); // Question 6
     await box_hour_analysis();
+    await detail_user_analysis();
+    await detail_box_analysis();
 }
 
 module.exports = { handle_data };

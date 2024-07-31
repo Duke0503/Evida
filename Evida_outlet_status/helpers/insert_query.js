@@ -117,23 +117,11 @@ const insert_query_statemnet = async (
   outlet_power_factor,
   outlet_power_consumption,
 ) => {
-  let user_id = null;
-  let user_name = null
-  if (outlet_status == 2) {
-    const user = await user_charging(box_id, outlet_number);
-    if (user) {
-      user_id = user.id;
-      user_name = user.name;
-    } 
-  }
-  await update_outlet(`${box_id}_${outlet_number}`);
   await insert_outlet(
     `${box_id}_${outlet_number}`,
     box_id, 
     location_name,
     timestamp,
-    user_id,
-    user_name,
     outlet_number,
     box_connection,
     outlet_status,
@@ -145,6 +133,18 @@ const insert_query_statemnet = async (
     outlet_power_factor,
     outlet_power_consumption,
   );
+
+  let user_id = null;
+  let user_name = null
+  if (outlet_status == 2) {
+    const user = await user_charging(box_id, outlet_number);
+    if (user) {
+      user_id = user.id;
+      user_name = user.name;
+    } 
+  }
+  await update_outlet(`${box_id}_${outlet_number}`);
+
   const insert_query = `
     INSERT INTO outlet_data (
       box_id, 
