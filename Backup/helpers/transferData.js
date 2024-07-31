@@ -16,7 +16,7 @@ const transferData = async (tableName, queryFields) => {
       // Construct PostgreSQL query
       const postgresQuery = `
         SELECT ${queryFields.map(field => field === 'created_at' || field === 'updated_at' || field === 'timestamp' ? `CAST(${field} AS TEXT) AS ${field}` : field).join(', ')}
-        FROM ${tableName.split('.').pop()}  -- Get the table name without schema prefix
+        FROM ${tableName.split('.').pop()} 
         WHERE created_at > $1
         ORDER BY created_at ASC
         LIMIT $2 OFFSET $3
