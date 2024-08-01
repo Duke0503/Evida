@@ -1,4 +1,4 @@
-const { save_data_to_database } = require('./save_data_to_database');
+const { create_message_to_save } = require('./create_message_to_save');
 const { find_outlet_status_by_name, insert_outlet_status, update_status_outlet } = require('./outlet_status_sql');
 const { find_outlet_by_name } = require('./outlets_sql');
 
@@ -7,6 +7,7 @@ const handle_status_data_outlet = async (
   content_mqtt,
   list_box_outlet,
   list_box_data,
+  list_buffer_message
 ) => {
   const list_outlet = content_mqtt.toString().split(',');
 
@@ -30,7 +31,8 @@ const handle_status_data_outlet = async (
       check_status_change(
         list_box_outlet,
         outlet_id,
-        outlet_status
+        outlet_status,
+        list_buffer_message
       );
     };
   });
@@ -95,14 +97,15 @@ const get_box_connection = (list_outlet) => {
 const check_status_change = async (
   list_box_outlet,
   outlet_id,
-  outlet_status
+  outlet_status,
+  list_buffer_message
 ) => {
   if (list_box_outlet[outlet_id].outlet_status != Number(outlet_status)) {
     await update_status_outlet(outlet_id, outlet_status);
 
     list_box_outlet[outlet_id].outlet_status = Number(outlet_status);
 
-    save_data_to_database(list_box_outlet[outlet_id]);
+    create_message_to_save(list_box_outlet[outlet_id], list_buffer_message);
   };
 };
 

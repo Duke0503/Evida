@@ -10,7 +10,8 @@ const handle_message_mqtt = async (
   topic_mqtt,
   content_mqtt,
   list_box_outlet,
-  list_box_data
+  list_box_data,
+  list_buffer_message
 ) => {
   const [ topic, box_id ] = topic_mqtt.split('_');
 
@@ -21,6 +22,7 @@ const handle_message_mqtt = async (
         content_mqtt,
         list_box_outlet,
         list_box_data,
+        list_buffer_message
       );
       break;
     case 'AEbox':
@@ -28,6 +30,7 @@ const handle_message_mqtt = async (
         box_id,
         content_mqtt,
         list_box_outlet,
+        list_buffer_message
       );
       break;
     case 'PEbox':
@@ -35,6 +38,7 @@ const handle_message_mqtt = async (
         box_id,
         content_mqtt,
         list_box_outlet,
+        list_buffer_message
       );
       break;
     case 'PFEbox':
@@ -42,6 +46,7 @@ const handle_message_mqtt = async (
         box_id,
         content_mqtt,
         list_box_outlet,
+        list_buffer_message
       );
       break;
     case 'VEbox':     

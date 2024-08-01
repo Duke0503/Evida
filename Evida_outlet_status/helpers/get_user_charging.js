@@ -1,34 +1,41 @@
 const axios = require('axios');
 const { get_headers } = require('./login_transaction');
 
-const user_charging = async (box_id, outlet_number) => {
+const get_list_user_charging = async (list_user_charging) => {
   try {
     const headers = await get_headers();
 
-    let user = null;
+    let number_of_charging_transaction = 0;
 
-    try {
-      const response = await axios.get(`${process.env.API_TRANSACTIONS}`, { headers: headers });
-    
-      for (const transaction of response.data['hydra:member']) {
-        if (transaction.outlet.uniqueId === `${box_id}_${outlet_number}`) {
-          user = {
-            id: transaction.user.id,
-            name: transaction.user.name
-          };
-          break;
-        }
-      }
-    } catch (error) {
-      console.error(`Error fetching transactions:`, error);
+    await axios.get(process.env.API_TRANSACTIONS_TOTAL_ITEMS, { headers: headers })
+      .then(response => {
+        number_of_charging_transaction = response.data['hydra:totalItems'];
+      })
+      .catch(error => {
+        console.error('Error fetching total number of users:', error);
+      });
+
+    for (let number_page = 1; number_page <= Math.ceil(number_of_charging_transaction / 100); number_page++) {
+      await axios.get(`${process.env.API_TRANSACTIONS}${number_page}`, { headers: headers })
+        .then(response_false_transactions => {
+            response_false_transactions.data['hydra:member'].forEach(async transaction => {
+              if (!list_user_charging[transaction.outlet.uniqueId]) {
+                list_user_charging[transaction.outlet.uniqueId] = {
+                  user_id : transaction.user.id,
+                  user_name : transaction.user.name
+                }
+              }
+          });
+      })
+      .catch(error => {
+        console.error(`Error fetching users for page ${number_page}:`, error);
+      });
     }
-
-    return user;
   } catch (error) {
     console.error('Error in fetch_transaction_data:', error);
   }
 };
 
 module.exports = {
-  user_charging
+  get_list_user_charging
 }

@@ -1,11 +1,12 @@
-const { insert_query } = require('./insert_query');
+const { check_condition_of_message } = require('./check_condition_of_message');
 
-const save_data_to_database = async (
+const create_message_to_save = async (
   outlet,
+  list_buffer_message
 ) => {
   const box_connection = get_box_connection(outlet.box_connection);
 
-  await insert_query(
+  await check_condition_of_message(
     outlet.box_id,
     outlet.location_name,
     new Date(),
@@ -19,6 +20,7 @@ const save_data_to_database = async (
     outlet.external_meter_voltage,
     outlet.outlet_power_factor,
     outlet.outlet_power_consumption / (3.6 * 1000 * 1000),
+    list_buffer_message,
   )  
 };
 
@@ -27,4 +29,4 @@ const get_box_connection = (box_connection) => {
   return 'offline'
 };
 
-module.exports = { save_data_to_database };
+module.exports = { create_message_to_save };

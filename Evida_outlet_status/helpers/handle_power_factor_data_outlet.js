@@ -1,10 +1,11 @@
-const { save_data_to_database } = require('./save_data_to_database');
+const { create_message_to_save } = require('./create_message_to_save');
 const { check_status_outlet_charging} = require('./check_status_outlet_charging');
 
 const handle_power_factor_data_outlet = async (
   box_id,
   content_mqtt,
   list_box_outlet,
+  list_buffer_message
 ) => {
   const list_outlet = content_mqtt.toString().split(',');
 
@@ -23,7 +24,7 @@ const handle_power_factor_data_outlet = async (
           if (check_power_factor_condition_to_save_current(list_box_outlet, outlet_id, outlet_power_factor)) {
             list_box_outlet[outlet_id].outlet_power_factor = Number(outlet_power_factor);
 
-            save_data_to_database(list_box_outlet[outlet_id]);
+            create_message_to_save(list_box_outlet[outlet_id], list_buffer_message);
           } else list_box_outlet[outlet_id].outlet_power_factor = Number(outlet_power_factor);
         }
       } else list_box_outlet[outlet_id].outlet_power_factor = Number(outlet_power_factor);

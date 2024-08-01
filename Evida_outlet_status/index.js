@@ -9,6 +9,8 @@ const { handle_message_mqtt } = require('./helpers/handle_message_mqtt');
 const { check_time_outlet } = require('./helpers/check_time_outlet');
 const { check_network_connection } = require('./helpers/check_network_connection');
 const { create_box_photograph_table, create_outlet_status_table, create_outlets_table } = require('./helpers/create_table');
+const { get_list_user_charging } = require('./helpers/get_user_charging');
+const { insert_query } = require('./helpers/insert_query');
 
 const initialize = async () => {
   await check_network_connection();
@@ -32,6 +34,8 @@ const initialize = async () => {
   });
 
   let list_box_data = [];
+  let list_buffer_message = [];
+  let list_user_charging = [];
 
   const SE_topic_mqtt = 'SEbox_';
   const AE_topic_mqtt = 'AEbox_';
@@ -77,12 +81,36 @@ const initialize = async () => {
       content_mqtt,
       list_box_outlet,
       list_box_data,
+      list_buffer_message,
     );
   });
 
   cron.schedule('* * * * *', async () => {
-    check_time_outlet(list_box_outlet, list_box_data);
+    check_time_outlet(list_box_outlet, list_buffer_message);
   });
+
+  cron.schedule('*/5 * * * *', async() => {
+    await get_list_user_charging(list_user_charging);
+
+    let list_message_save_to_database = JSON.parse(JSON.stringify(list_buffer_message));
+
+    list_buffer_message = [];
+
+    list_message_save_to_database.forEach(async message => {
+      if (message.outlet_status === 2) {
+        const user = list_user_charging[`${message.box_id}_${message.outlet_number}`];
+        if (user) {
+          message.user_id = user.user_id;
+          message.user_name = user.user_name;
+        }
+      }
+
+      await insert_query(message);
+    })
+
+    list_message_save_to_database = [];
+    list_user_charging = [];
+  })
 };
 
 initialize();
