@@ -41,28 +41,6 @@ const create_box_photograph_table = async () => {
   };
 };
 
-const create_outlet_status_table = async () => {
-  const create_outlet_status_query = `
-    CREATE TABLE IF NOT EXISTS public.outlet_status
-    (
-        name text COLLATE pg_catalog."default" NOT NULL,
-        outlet_status integer,
-        update_time timestamp with time zone,
-        CONSTRAINT outlet_status_pkey PRIMARY KEY (name)
-    )
-
-    TABLESPACE pg_default;
-
-    ALTER TABLE IF EXISTS public.outlet_status
-    OWNER to postgres;
-  `;
-
-  try {
-    await client.query(create_outlet_status_query);
-  } catch (err) {
-    console.error('Error executing query', err.stack);
-  };
-};
 
 const create_outlets_table = async () => {
   const create_outlet_status_query = `
@@ -102,6 +80,5 @@ const create_outlets_table = async () => {
 
 module.exports = {
   create_box_photograph_table,
-  create_outlet_status_table,
   create_outlets_table,
 }

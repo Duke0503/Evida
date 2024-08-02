@@ -5,9 +5,11 @@ const get_list_user_charging = async (list_user_charging) => {
   try {
     const headers = await get_headers();
 
+    const timeout = 60000;
+
     let number_of_charging_transaction = 0;
 
-    await axios.get(process.env.API_TRANSACTIONS_TOTAL_ITEMS, { headers: headers })
+    await axios.get(process.env.API_TRANSACTIONS_TOTAL_ITEMS, { headers: headers, timeout: timeout })
       .then(response => {
         number_of_charging_transaction = response.data['hydra:totalItems'];
       })
@@ -16,7 +18,7 @@ const get_list_user_charging = async (list_user_charging) => {
       });
 
     for (let number_page = 1; number_page <= Math.ceil(number_of_charging_transaction / 100); number_page++) {
-      await axios.get(`${process.env.API_TRANSACTIONS}${number_page}`, { headers: headers })
+      await axios.get(`${process.env.API_TRANSACTIONS}${number_page}`, { headers: headers, timeout: timeout })
         .then(response_false_transactions => {
             response_false_transactions.data['hydra:member'].forEach(async transaction => {
               if (!list_user_charging[transaction.outlet.uniqueId]) {

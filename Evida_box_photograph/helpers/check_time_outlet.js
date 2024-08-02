@@ -8,12 +8,12 @@ const check_time_outlet = async (list_box_outlet, list_buffer_message) => {
 
   try {
     const outlet_with_status_2 = await client.query(
-      'SELECT name FROM outlet_status WHERE outlet_status = $1 AND update_time <= $2',
+      'SELECT name FROM outlets WHERE outlet_status = $1 AND timestamp <= $2',
       [2, more_than_15_min]
     );
 
     const outlet_with_status_differ_2 = await client.query(
-      'SELECT name FROM outlet_status WHERE outlet_status <> $1 AND update_time <= $2',
+      'SELECT name FROM outlets WHERE outlet_status <> $1 AND timestamp <= $2',
       [2, more_than_1_day]
     );
 

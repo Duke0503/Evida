@@ -11,7 +11,8 @@ const handle_message_mqtt = async (
   content_mqtt,
   list_box_outlet,
   list_box_data,
-  list_buffer_message
+  list_buffer_message,
+  client_connect_mqtt
 ) => {
   const [ topic, box_id ] = topic_mqtt.split('_');
 
@@ -22,7 +23,8 @@ const handle_message_mqtt = async (
         content_mqtt,
         list_box_outlet,
         list_box_data,
-        list_buffer_message
+        list_buffer_message,
+        client_connect_mqtt
       );
       break;
     case 'AEbox':

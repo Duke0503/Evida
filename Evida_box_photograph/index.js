@@ -8,7 +8,7 @@ const { fetch_box_id } = require('./helpers/fetch_box_id')
 const { handle_message_mqtt } = require('./helpers/handle_message_mqtt');
 const { check_time_outlet } = require('./helpers/check_time_outlet');
 const { check_network_connection } = require('./helpers/check_network_connection');
-const { create_box_photograph_table, create_outlet_status_table, create_outlets_table } = require('./helpers/create_table');
+const { create_box_photograph_table, create_outlets_table } = require('./helpers/create_table');
 const { get_list_user_charging } = require('./helpers/get_user_charging');
 const { insert_query } = require('./helpers/insert_query');
 
@@ -26,7 +26,6 @@ const initialize = async () => {
   });
   
   create_box_photograph_table();
-  create_outlet_status_table();
   create_outlets_table();
 
   process.on('exit', () => {
@@ -36,17 +35,12 @@ const initialize = async () => {
   let list_box_data = [];
   let list_buffer_message = [];
   let list_user_charging = [];
-
-  const SE_topic_mqtt = 'SEbox_';
-  const AE_topic_mqtt = 'AEbox_';
-  const PE_topic_mqtt = 'PEbox_';
-  const PFE_topic_mqtt = 'PFEbox_';
-  const VE_topic_mqtt = 'VEbox_';
-  const PME_topic_mqtt = 'PMEbox_';
-  const CE_topic_mqtt = 'CEbox_';
-
   let topics_mqtt = [];
   let list_box_outlet = [];
+
+  const SE_topic_mqtt = 'SEbox_';
+  const PE_topic_mqtt = 'PEbox_';
+  const CE_topic_mqtt = 'CEbox_';
 
   client_connect_mqtt.on('connect', async() => {
     try {
@@ -55,11 +49,7 @@ const initialize = async () => {
       list_box_id.forEach(box => {
         const box_id = box.split('_')[1];
         topics_mqtt.push(SE_topic_mqtt + box_id); 
-        topics_mqtt.push(AE_topic_mqtt + box_id); 
         topics_mqtt.push(PE_topic_mqtt + box_id);
-        topics_mqtt.push(PFE_topic_mqtt + box_id); 
-        topics_mqtt.push(VE_topic_mqtt + box_id); 
-        topics_mqtt.push(PME_topic_mqtt + box_id);
         topics_mqtt.push(CE_topic_mqtt + box_id);
       });
 
@@ -67,7 +57,10 @@ const initialize = async () => {
         client_connect_mqtt.subscribe(topic_mqtt, err => {
           if (err) {
             console.error(`Failed to subscribe to topic ${topic_mqtt}:`, err);
-          };
+          }
+          else {
+            console.log(`Subscribed to topic ${topic_mqtt}`);
+          }
         });
       });
     } catch (error) {
@@ -82,6 +75,7 @@ const initialize = async () => {
       list_box_outlet,
       list_box_data,
       list_buffer_message,
+      client_connect_mqtt
     );
   });
 

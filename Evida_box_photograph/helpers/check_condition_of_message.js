@@ -1,6 +1,3 @@
-const client = require('../config/database');
-const { user_charging } = require('./get_user_charging');
-const { update_outlet } = require('./outlet_status_sql');
 const { insert_outlet, find_outlet_by_name } = require('./outlets_sql');
 
 const check_condition_of_message = async (
@@ -164,8 +161,6 @@ const save_message_to_buffer = async (
     created_at: now,
     updated_at: now,
   });
-
-  await update_outlet(`${box_id}_${outlet_number}`);
 
 };
 
