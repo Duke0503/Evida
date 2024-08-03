@@ -12,18 +12,18 @@ WITH user_analysis AS (
         CASE 
             WHEN AVG_POWER >= 1.5 THEN 'High'
             ELSE 'Low'
-        END AS Consumed,
+        END AS "Consumed",
         CASE 
             WHEN "CHARGING/MONTH" > 19 THEN 'Frequently'
             WHEN "CHARGING/MONTH" BETWEEN 10 AND 19 THEN 'Occasionally'
             ELSE 'Rarely'
-        END AS charge,
+        END AS "Frequency of Charging",
         CASE
             WHEN "%REVENUE/REVENUE_WO" IS NULL OR "%PROMOTION/REVENUE_WO" IS NULL THEN 'Charging free'
             WHEN "AVG_NUMBER_PRO%" < 20 THEN 'Unaware of promotion'
             WHEN "AVG_NUMBER_PRO%" < 60 THEN 'Newly aware of promotion'
             ELSE 'Often use discounts'
-        END AS promotion_usage
+        END AS "Promotion Usage"
     FROM (
         SELECT 
             Y.*, 
