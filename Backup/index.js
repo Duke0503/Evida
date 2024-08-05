@@ -54,9 +54,9 @@ const startCronJob = async () => {
     ]);
 
     await transferData('box_photograph', [
-      'id', 'ebox_id', 'ebox_name', 'box_status', 'outlet_id', 'outlet_status', 'system_status',
-      'timestamp', 'user_id', 'user_name', 'outlet_current', 'current_external_meter', 'outlet_voltage',
-      'voltage_external_meter', 'power_factor', 'power_consumption', 'created_at', 'updated_at'
+      'id', 'box_id', 'location_name', 'box_connection', 'outlet_number', 'outlet_status', 'command',
+      'timestamp', 'user_id', 'user_name', 'outlet_current', 'external_meter_current', 'outlet_voltage',
+      'external_meter_voltage', 'outlet_power_factor', 'outlet_power_consumption', 'created_at', 'updated_at'
     ]);
 
 
