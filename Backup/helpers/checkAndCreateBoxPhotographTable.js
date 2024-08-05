@@ -1,6 +1,6 @@
 const mysqlConnection = require('../config/mysql-config'); // MySQL connection
 
-const checkAndCreateOutletDataTable = async () => {
+const checkAndCreateBoxPhotographTable = async () => {
   try {
     const connection = await mysqlConnection;
 
@@ -9,13 +9,13 @@ const checkAndCreateOutletDataTable = async () => {
       SELECT COUNT(*) AS count 
       FROM information_schema.tables 
       WHERE table_schema = 'eboost-analytics-db'
-      AND table_name = 'outlet_data'
+      AND table_name = 'box_photograph'
     `);
 
     if (rows[0].count === 0) {
       // Create the table if it does not exist
       await connection.query(`
-        CREATE TABLE \`eboost-analytics-db\`.outlet_data (
+        CREATE TABLE \`eboost-analytics-db\`.box_photograph (
           id BIGINT NOT NULL AUTO_INCREMENT,
           ebox_id TEXT,
           ebox_name TEXT,
@@ -37,38 +37,34 @@ const checkAndCreateOutletDataTable = async () => {
           PRIMARY KEY (id)
         );
       `);
-      console.log('Table outlet_data created in MySQL eboost-analytics-db database');
+      console.log('Table box_photograph created in MySQL eboost-analytics-db database');
 
       // Create index on created_at
       await connection.query(`
-        CREATE INDEX idx_created_at ON \`eboost-analytics-db\`.outlet_data (created_at);
+        CREATE INDEX idx_created_at ON \`eboost-analytics-db\`.box_photograph (created_at);
       `);
-      // console.log('Index on created_at created in outlet_data table');
+
     } else {
-      // console.log('Table outlet_data already exists in MySQL eboost-analytics-db database');
 
       // Check if the index already exists
       const [indexRows] = await connection.query(`
         SELECT COUNT(*) AS count
         FROM information_schema.statistics
         WHERE table_schema = 'eboost-analytics-db'
-        AND table_name = 'outlet_data'
+        AND table_name = 'box_photograph'
         AND index_name = 'idx_created_at'
       `);
 
       if (indexRows[0].count === 0) {
         // Create index on created_at if it does not exist
         await connection.query(`
-          CREATE INDEX idx_created_at ON \`eboost-analytics-db\`.outlet_data (created_at);
+          CREATE INDEX idx_created_at ON \`eboost-analytics-db\`.box_photograph (created_at);
         `);
-        // console.log('Index on created_at created in outlet_data table');
-      } else {
-        // console.log('Index on created_at already exists in outlet_data table');
       }
     }
   } catch (err) {
-    console.error('Error during checking or creating outlet_data table:', err);
+    console.error('Error during checking or creating box_photograph table:', err);
   }
 };
 
-module.exports = checkAndCreateOutletDataTable;
+module.exports = checkAndCreateBoxPhotographTable;
