@@ -38,8 +38,7 @@ const check_power_consumption_condition_to_save_current = (
   outlet_id,
   outlet_power_consumption
 ) => {
-  if (Number(outlet_power_consumption) - list_box_outlet[outlet_id].outlet_power_consumption > (3.6 * 1000 * 1000)
-    || Number(outlet_power_consumption) - list_box_outlet[outlet_id].outlet_power_consumption < - (3.6 * 1000 * 1000)) 
+  if (Math.abs(Number(outlet_power_consumption) - list_box_outlet[outlet_id].outlet_power_consumption) > (3.6 * 1000 * 1000))
     return true;
   return false;
 };

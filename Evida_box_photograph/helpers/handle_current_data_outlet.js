@@ -40,8 +40,7 @@ const check_current_condition_to_save_current = (
   outlet_id,
   outlet_current
 ) => {
-  if (Number(outlet_current) - list_box_outlet[outlet_id].outlet_current > 1000
-    || Number(outlet_current) - list_box_outlet[outlet_id].outlet_current < -1000) 
+  if (Math.abs(Number(outlet_current) - list_box_outlet[outlet_id].outlet_current) > 1000)
     return true;
   return false;
 };

@@ -39,8 +39,7 @@ const check_power_factor_condition_to_save_current = (
   outlet_id,
   outlet_power_factor
 ) => {
-  if (Number(outlet_power_factor) - list_box_outlet[outlet_id].outlet_power_factor > 20
-    || Number(outlet_power_factor) - list_box_outlet[outlet_id].outlet_power_factor < -20) 
+  if (Math.abs(Number(outlet_power_factor) - list_box_outlet[outlet_id].outlet_power_factor) > 20) 
     return true;
   return false;
 };
