@@ -11,7 +11,7 @@ const { box_hour_analysis } = require('../tables/box_hour_analysis.table');
 const { detail_user_analysis } = require('../tables/detail_user_analysis.table');
 const { detail_box_analysis } = require('../tables/detail_box_analysis.table');
 const { box_promotion_analysis } = require('../tables/box_promotion_analysis.table');
-const { user_analysis_monthly } = require('../tables/user_analysis_monthly');
+const { user_analysis_monthly } = require('../tables/user_analysis_monthly.table');
 
 const handle_data = async () => {
     await active_outlet();
