@@ -26,8 +26,8 @@ CTE2 AS (
 SELECT 
   CTE2.promotion_code AS "Promotion Code", 
   CTE2.promotion_discount AS "% Promotion Discount",
-  TO_CHAR(CTE2.Start_day, 'YYYY-MM-DD') AS "Start Day", 
-  TO_CHAR(CTE2.End_day, 'YYYY-MM-DD') AS "End Day", 
+  TO_CHAR(CTE2.Start_day, 'YYYY-MM-DD') AS "Start Date", 
+  TO_CHAR(CTE2.End_day, 'YYYY-MM-DD') AS "End Date", 
   (End_day::date - Start_day::date) AS "Total Time (Day)",
   COUNT(valid_transaction.promotion_code) AS "Number of Discounts Used"
 FROM valid_transaction
