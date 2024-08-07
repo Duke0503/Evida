@@ -62,7 +62,7 @@ WITH user_analysis AS (
             FROM (
                 SELECT 
                     user_id AS "User ID", 
-                    TO_CHAR(merged_start_time, 'YYYY-MM') AS "Time", 
+                    TO_CHAR(merged_start_time, 'YYYY-MM-DD') AS "Time", 
                     SUM(wattage_consumed) AS "Power Consumption", 
                     COUNT(invoice_id) AS "Transaction Events", 
                     SUM(activation_fee) AS "Activation Fee", 
@@ -72,7 +72,7 @@ WITH user_analysis AS (
                     SUM(paid) AS "Revenue after Discount"
                 FROM valid_transaction 
                 WHERE EXTRACT(YEAR FROM merged_start_time) = EXTRACT(YEAR FROM CURRENT_DATE)
-                GROUP BY user_id, TO_CHAR(merged_start_time, 'YYYY-MM')
+                GROUP BY user_id, TO_CHAR(merged_start_time, 'YYYY-MM-DD')
             ) X
             GROUP BY X."User ID"
         ) Y
