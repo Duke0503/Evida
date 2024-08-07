@@ -51,7 +51,7 @@ WITH user_analysis AS (
             SELECT 
                 X."User ID", 
                 COUNT("Time") AS "Consecutive Months in Year", 
-                MAX("Time") AS "Last Used",
+				MAX("Last Used") AS "Last Used",
                 SUM("Power Consumption") AS "Power Consumption", 
                 SUM("Transaction Events") AS "Transaction Events", 
                 SUM("Activation Fee") / 1000000 AS "Activation Fee", 
@@ -62,17 +62,18 @@ WITH user_analysis AS (
             FROM (
                 SELECT 
                     user_id AS "User ID", 
-                    TO_CHAR(merged_start_time, 'YYYY-MM-DD') AS "Time", 
-                    SUM(wattage_consumed) AS "Power Consumption", 
-                    COUNT(invoice_id) AS "Transaction Events", 
-                    SUM(activation_fee) AS "Activation Fee", 
+                    MAX(TO_CHAR(merged_start_time, 'YYYY-MM-DD')) AS "Last Used",
+                    TO_CHAR(merged_start_time, 'YYYY-MM') AS "Time",  
+                    SUM(wattage_consumed) AS "Power Consumption",
+					COUNT(invoice_id) AS "Transaction Events", 
+                    SUM(activation_fee) AS "Activation Fee",
                     SUM(total_consumed_fee) AS "kWh Fee", 
                     SUM(discount_amount) AS "Discount",
                     COUNT(CASE WHEN discount_amount > 0 THEN 1 ELSE NULL END) AS "Number of Discounts",
                     SUM(paid) AS "Revenue after Discount"
                 FROM valid_transaction 
                 WHERE EXTRACT(YEAR FROM merged_start_time) = EXTRACT(YEAR FROM CURRENT_DATE)
-                GROUP BY user_id, TO_CHAR(merged_start_time, 'YYYY-MM-DD')
+                GROUP BY user_id, TO_CHAR(merged_start_time, 'YYYY-MM') --,TO_CHAR(merged_start_time, 'YYYY-MM-DD')
             ) X
             GROUP BY X."User ID"
         ) Y
