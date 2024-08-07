@@ -17,8 +17,8 @@ SELECT
     SUM(Trans.wattage_consumed) AS "Power Consumption",
     SUM(Trans.activation_fee) / 1000000 AS "Activation Fee (Million VND)",
     SUM(Trans.total_consumed_fee) / 1000000 AS "kWh Fee (Million VND)",
-    SUM(Trans.discount_amount) / 1000000 AS "Discount Pricing (Million VND)",
-    SUM(Trans.paid) / 1000000 AS "Revenue without Discount (Million VND)",
+    SUM(Trans.discount_amount) / 1000000 AS "Discount (Million VND)",
+    SUM(Trans.paid) / 1000000 AS "Revenue after Discount (Million VND)",
     CASE WHEN COUNT(Trans.invoice_id) > 40 * ao.number_of_active_outlets THEN 100 ELSE ROUND((COUNT(Trans.invoice_id)::numeric /(40 * ao.number_of_active_outlets) ) * 100, 2) END AS "Utilization"
 FROM public.valid_transaction Trans
 JOIN public.boxes b ON Trans.box_id = b.box_id

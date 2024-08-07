@@ -16,7 +16,7 @@ SELECT
   ,SUM(VT.wattage_consumed) AS "Power Consumption"
   ,COUNT(VT.*) AS "Number of Transaction Events"
   ,SUM(VT.paid) AS "Revenue after Discount"
-  ,SUM(VT.discount_amount) AS "Discount Pricing"
+  ,SUM(VT.discount_amount) AS "Discount"
   ,SUM(CASE WHEN VT.promotion_discount > 0 THEN 1 ELSE 0 END) AS "Number of Discounts"
   ,SUM(VT.activation_fee) AS "Activation Fee"
 FROM valid_transaction VT

@@ -43,7 +43,7 @@ SELECT
     t.total_power as "Power Consumption",
     t.total_w_o_revenue / 1000000 "Revenue without Discount (Million VND)",
     t.number_of_promotion AS "Number of Discounts",
-    t.total_promotion / 1000000 AS "Discount Pricing (Million VND)",
+    t.total_promotion / 1000000 AS "Discount (Million VND)",
     t.total_cost_vnd / 1000000 as "Revenue after Discount (Million VND)",
     
     LAG(t.time_, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Previous Quarter",
@@ -76,9 +76,9 @@ SELECT
     t.number_of_promotion - LAG(t.number_of_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) AS "Compare Previous Number of Discounts Change",
     ROUND(ROUND(CAST((t.number_of_promotion - LAG(t.number_of_promotion, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / (LAG(t.number_of_promotion, 1) OVER (ORDER BY t.year_, t.quarter_)), 2) AS "Percentage Previous Number of Discounts Change",
     
-    LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Previous Discount Pricing",
-    t.total_promotion - LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Compare Previous Discount Pricing Change",
-    ROUND(ROUND(CAST((t.total_promotion - LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / CAST(LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) AS NUMERIC), 2) AS "Percentage Previous Discount Pricing Change",
+    LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Previous Discount",
+    t.total_promotion - LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Compare Previous Discount Change",
+    ROUND(ROUND(CAST((t.total_promotion - LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_)) AS NUMERIC), 3) * 100 / CAST(LAG(t.total_promotion, 1) OVER (ORDER BY t.year_, t.quarter_) AS NUMERIC), 2) AS "Percentage Previous Discount Change",
     
     LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Previous Revenue after Discount",
     t.total_cost_vnd - LAG(t.total_cost_vnd, 1) OVER (ORDER BY t.year_, t.quarter_) / 1000000 AS "Compare Previous Revenue after Discount Change",

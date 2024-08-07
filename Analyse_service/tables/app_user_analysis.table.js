@@ -28,11 +28,11 @@ WITH user_analysis AS (
         SELECT 
             Y.*, 
             CASE 
-                WHEN "Revenue without Discount" + "Discount Pricing" > 0 THEN ROUND(("Revenue without Discount"::numeric / ("Revenue without Discount"::numeric + "Discount Pricing"::numeric)) * 100, 2) 
+                WHEN "Revenue after Discount" + "Discount" > 0 THEN ROUND(("Revenue after Discount"::numeric / ("Revenue after Discount"::numeric + "Discount"::numeric)) * 100, 2) 
                 ELSE NULL 
             END AS "%REVENUE/REVENUE_WO", 
             CASE 
-                WHEN "Revenue without Discount" + "Discount Pricing" > 0 THEN ROUND((100 - ("Revenue without Discount"::numeric / ("Revenue without Discount"::numeric + "Discount Pricing"::numeric)) * 100), 2) 
+                WHEN "Revenue after Discount" + "Discount" > 0 THEN ROUND((100 - ("Revenue after Discount"::numeric / ("Revenue after Discount"::numeric + "Discount"::numeric)) * 100), 2) 
                 ELSE NULL 
             END AS "%PROMOTION/REVENUE_WO", 
             CASE 
@@ -56,9 +56,9 @@ WITH user_analysis AS (
                 SUM("Transaction Events") AS "Transaction Events", 
                 SUM("Activation Fee") / 1000000 AS "Activation Fee", 
                 SUM("kWh Fee") / 1000000 AS "kWh Fee", 
-                SUM("Discount Pricing") / 1000000 AS "Discount Pricing",  
+                SUM("Discount") / 1000000 AS "Discount",  
                 SUM("Number of Discounts") AS "Number of Discounts", 
-                SUM("Revenue without Discount") / 1000000 AS "Revenue without Discount"
+                SUM("Revenue after Discount") / 1000000 AS "Revenue after Discount"
             FROM (
                 SELECT 
                     user_id AS "User ID", 
@@ -67,9 +67,9 @@ WITH user_analysis AS (
                     COUNT(invoice_id) AS "Transaction Events", 
                     SUM(activation_fee) AS "Activation Fee", 
                     SUM(total_consumed_fee) AS "kWh Fee", 
-                    SUM(discount_amount) AS "Discount Pricing",
+                    SUM(discount_amount) AS "Discount",
                     COUNT(CASE WHEN discount_amount > 0 THEN 1 ELSE NULL END) AS "Number of Discounts",
-                    SUM(paid) AS "Revenue without Discount"
+                    SUM(paid) AS "Revenue after Discount"
                 FROM valid_transaction 
                 WHERE EXTRACT(YEAR FROM merged_start_time) = EXTRACT(YEAR FROM CURRENT_DATE)
                 GROUP BY user_id, TO_CHAR(merged_start_time, 'YYYY-MM')

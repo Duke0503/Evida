@@ -39,9 +39,9 @@ SELECT
     t.number_of_outlet AS "Active Outlets",
     t.total_transaction AS "Transaction Events",
     t.total_power AS "Power Consumption",
-    t.total_w_o_revenue / 1000000 AS "Total without Revenue (Million VND)",
+    t.total_w_o_revenue / 1000000 AS "Revenue without Discount (Million VND)",
     t.number_of_promotion AS "Number of Discounts",
-    t.total_promotion / 1000000 AS "Discount Pricing (Million VND)",
+    t.total_promotion / 1000000 AS "Discount (Million VND)",
     t.total_cost_vnd / 1000000 AS "Revenue after Discount (Million VND)",
     
 	LAG(t.time_, 1) OVER (ORDER BY t.time_) AS "Previous Month",
